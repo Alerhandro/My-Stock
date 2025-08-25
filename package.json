@@ -1,0 +1,42 @@
+{
+  "name": "sistema-de-estoque",
+  "version": "1.0.0",
+  "description": "Sistema de gerenciamento de estoque com Electron e Firebase.",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "author": "Alerhandro",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "firebase": "^12.1.0",
+    "jspdf": "^3.0.1",
+    "jspdf-autotable": "^5.0.2"
+  },
+  "build": {
+    "appId": "com.seu-nome.sistema-de-estoque",
+    "productName": "Sistema de Estoque",
+    "files": [
+      "src/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release/"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "src/assets/favicon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}

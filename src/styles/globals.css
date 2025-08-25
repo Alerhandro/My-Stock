@@ -1,0 +1,129 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+/* TEMA CLARO (PADRÃO) */
+:root {
+    --fundo-principal: #f4f7fa;
+    --fundo-secundario: #ffffff;
+    --fundo-sidebar: #1e293b;
+    --texto-principal: #1e293b;
+    --texto-secundario: #64748b;
+    --texto-sidebar: #e2e8f0;
+    --cor-primaria: #6366f1;
+    --cor-primaria-hover: #4f46e5;
+    --cor-destaque: #f59e0b;
+    --cor-borda: #e2e8f0;
+    --cor-sucesso: #10b981;
+    --cor-erro: #ef4444;
+    --sombra: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+/* TEMA ESCURO */
+body.dark-theme {
+    --fundo-principal: #0f172a;
+    --fundo-secundario: #1e293b;
+    --fundo-sidebar: #1e293b;
+    --texto-principal: #e2e8f0;
+    --texto-secundario: #94a3b8;
+    --texto-sidebar: #e2e8f0;
+    --cor-primaria: #818cf8;
+    --cor-primaria-hover: #6366f1;
+    --cor-borda: #334155;
+}
+
+/* TEMA OCEANO */
+body.ocean-theme {
+    --fundo-principal: #f0f9ff;
+    --fundo-secundario: #ffffff;
+    --fundo-sidebar: #0c4a6e;
+    --texto-principal: #082f49;
+    --texto-secundario: #475569;
+    --texto-sidebar: #e0f2fe;
+    --cor-primaria: #0ea5e9;
+    --cor-primaria-hover: #0284c7;
+    --cor-borda: #e0f2fe;
+}
+
+/* TEMA CENOURA */
+body.sunset-theme {
+    --fundo-principal: #1c1917;
+    --fundo-secundario: #292524;
+    --fundo-sidebar: #292524;
+    --texto-principal: #e7e5e4;
+    --texto-secundario: #a8a29e;
+    --texto-sidebar: #e7e5e4;
+    --cor-primaria: #f97316;
+    --cor-primaria-hover: #ea580c;
+    --cor-borda: #44403c;
+}
+
+/* NOVO: PASTEL (CLARO) */
+body.pastel-light-theme {
+    --fundo-principal: #fcfee7;
+    --fundo-secundario: #ffffff;
+    --fundo-sidebar: #f2f7b6;
+    --texto-principal: #4a5568;
+    --texto-secundario: #718096;
+    --texto-sidebar: #4a5568;
+    --cor-primaria: #ffb6c1;
+    --cor-primaria-hover: #ff9aab;
+    --cor-borda: #e2e8f0;
+}
+
+/* NOVO: CELESTE (ESCURO) */
+body.pastel-dark-theme {
+    --fundo-principal: #2d3748;
+    --fundo-secundario: #4a5568;
+    --fundo-sidebar: #4a5568;
+    --texto-principal: #e2e8f0;
+    --texto-secundario: #a0aec0;
+    --texto-sidebar: #e2e8f0;
+    --cor-primaria: #81e6d9;
+    --cor-primaria-hover: #4fd1c5;
+    --cor-borda: #5a6578;
+}
+
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--fundo-principal);
+    color: var(--texto-principal);
+    margin: 0;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+input, select {
+    background-color: var(--fundo-principal);
+    color: var(--texto-principal);
+    border: 1px solid var(--cor-borda);
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 16px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--cor-primaria);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--cor-primaria) 20%, transparent);
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--cor-primaria);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.2s, transform 0.2s;
+}
+button:hover {
+    background-color: var(--cor-primaria-hover);
+    transform: translateY(-1px);
+}

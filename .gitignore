@@ -1,0 +1,7 @@
+# Arquivo de variáveis de ambiente - NUNCA ENVIE ISSO!
+.env
+
+# Outros arquivos comuns a ignorar
+node_modules
+dist
+release
