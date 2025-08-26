@@ -335,3 +335,22 @@ h3 { margin-top: 0; color: var(--texto-principal); border-bottom: 1px solid var(
 #generate-pdf-btn:hover {
     background-color: color-mix(in srgb, var(--cor-destaque) 85%, #000);
 }
+
+.extra-links {
+  margin-top: -15px;
+  margin-bottom: 20px;
+  text-align: right;
+  font-size: 13px;
+}
+
+.reset-info {
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.consume-button {
+    background-color: var(--cor-destaque);
+}
+.consume-button:hover {
+    background-color: color-mix(in srgb, var(--cor-destaque) 85%, #000);
+}

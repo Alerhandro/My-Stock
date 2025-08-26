@@ -1,6 +1,16 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
-require("dotenv").config();
+
+// --- CORREÇÃO DEFINITIVA APLICADA AQUI ---
+// Define o caminho do .env de forma inteligente.
+// Se o app estiver empacotado, ele procura na pasta de recursos.
+// Se não, ele procura na raiz do projeto (para desenvolvimento).
+const envPath = app.isPackaged
+  ? path.join(process.resourcesPath, '.env')
+  : path.join(__dirname, '..', '.env');
+
+require("dotenv").config({ path: envPath });
+// ------------------------------------------
 
 let mainWindow;
 
@@ -17,7 +27,7 @@ function createWindow() {
 
   mainWindow.setMenuBarVisibility(false);
   mainWindow.loadFile(path.join(__dirname, "pages/login.html"));
-  // TIRE DO COMENTARIO CASO QUEIRA VERIFICAR O DEBUG
+
   // mainWindow.webContents.openDevTools();
 }
 

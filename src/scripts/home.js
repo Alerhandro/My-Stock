@@ -44,20 +44,21 @@ const templates = {
                 </div>
                 <div class="form-group">
                     <label for="product-quantity">Quantidade</label>
-                    <input type="number" id="product-quantity" placeholder="Ex: 10" required />
+                    <input type="number" id="product-quantity" min="0" placeholder="Ex: 10" required />
                 </div>
                 <div class="form-group">
                     <label for="product-value">Valor Unitário (R$)</label>
-                    <input type="number" id="product-value" step="0.01" placeholder="Ex: 15.50" value="0" required />
+                    <input type="number" id="product-value" min="0" step="0.01" placeholder="Ex: 15.50" required />
                 </div>
                 <div class="form-group">
                     <label for="add-min-quantity">Qtd. Mínima para Alerta</label>
-                    <input type="number" id="add-min-quantity" placeholder="Ex: 5" value="0" required />
+                    <input type="number" id="add-min-quantity" min="0" placeholder="Ex: 5" required />
                 </div>
                 <button type="submit">Adicionar ao Estoque</button>
             </form>
         </div>
     `,
+  // ... (O restante dos templates permanece o mesmo) ...
   estoque: `
         <div class="card">
             <h3>Criar Novo Estoque</h3>
@@ -159,6 +160,7 @@ const templates = {
     `,
 };
 
+// ... (Mantenha as funções showToast, showModal, closeModal, applyTheme, openThemeModal como estão) ...
 function showToast(message, type = "success", duration = 3000) {
     const container = document.getElementById("toast-container");
     if (!container) return;
@@ -305,6 +307,13 @@ contentArea.addEventListener("click", (e) => {
       handleDeleteProduct(productItem.dataset.id, productItem.dataset.name);
     }
   }
+
+  if (e.target.matches(".consume-button")) {
+    const productItem = e.target.closest(".product-item");
+    if (productItem) {
+        handleConsumeProduct(productItem.dataset.id, productItem.dataset.name);
+    }
+  }
   
   if (e.target.matches(".edit-inventory-button")) {
     e.stopPropagation();
@@ -330,7 +339,6 @@ contentArea.addEventListener("click", (e) => {
 });
 
 contentArea.addEventListener("change", (e) => {
-    // Quando qualquer filtro do relatório mudar, recarregue os dados
     if (e.target.id === "report-inventory-select" || e.target.id === "report-month-select" || e.target.id === "report-year-select") {
         const inventoryId = document.getElementById('report-inventory-select').value;
         const month = document.getElementById('report-month-select').value;
@@ -343,6 +351,8 @@ contentArea.addEventListener("change", (e) => {
         if (selectedId) loadUsersForInventory(selectedId);
     }
 });
+
+// --- FUNÇÕES PRINCIPAIS ---
 
 function logMovement(inventoryId, inventoryName, productName, type, details) {
   db.collection("movements").add({
@@ -357,14 +367,28 @@ function logMovement(inventoryId, inventoryName, productName, type, details) {
 }
 
 async function handleAddProduct(form) {
+  const button = form.querySelector('button[type="submit"]');
+  button.disabled = true;
+  button.textContent = 'Adicionando...';
+
   const inventoryId = form.querySelector("#inventory-select").value;
   const productName = form.querySelector("#product-name").value;
   const quantity = parseInt(form.querySelector("#product-quantity").value, 10);
-  const value = parseFloat(form.querySelector("#product-value").value) || 0;
-  const minQuantity = parseInt(form.querySelector("#add-min-quantity").value, 10) || 0;
+  const value = parseFloat(form.querySelector("#product-value").value);
+  const minQuantity = parseInt(form.querySelector("#add-min-quantity").value);
+
+  // Validação para números negativos e campos vazios
+  if (quantity < 0 || value < 0 || minQuantity < 0) {
+    showModal("Valores negativos não são permitidos.");
+    button.disabled = false;
+    button.textContent = 'Adicionar ao Estoque';
+    return;
+  }
 
   if (!inventoryId) {
     showModal("Por favor, selecione um estoque.");
+    button.disabled = false;
+    button.textContent = 'Adicionar ao Estoque';
     return;
   }
 
@@ -372,9 +396,9 @@ async function handleAddProduct(form) {
     const inventoryRef = db.collection("inventories").doc(inventoryId);
     await inventoryRef.collection("products").add({
       name: productName,
-      quantity: quantity,
-      value: value,
-      minQuantity: minQuantity,
+      quantity: quantity || 0,
+      value: value || 0,
+      minQuantity: minQuantity || 0,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
 
@@ -387,17 +411,34 @@ async function handleAddProduct(form) {
   } catch (error) {
     console.error("Erro ao adicionar produto:", error);
     showModal("Ocorreu um erro ao adicionar o produto.");
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Adicionar ao Estoque';
   }
 }
 
 async function handleAddProductFromView(form) {
+    const button = form.querySelector('button[type="submit"]');
+    button.disabled = true;
+    button.textContent = 'Adicionando...';
+
     const productName = form.querySelector("#add-product-name-view").value;
     const quantity = parseInt(form.querySelector("#add-product-quantity-view").value, 10);
-    const value = parseFloat(form.querySelector("#add-product-value-view").value) || 0;
-    const minQuantity = parseInt(form.querySelector("#add-min-quantity-view").value, 10) || 0;
+    const value = parseFloat(form.querySelector("#add-product-value-view").value);
+    const minQuantity = parseInt(form.querySelector("#add-min-quantity-view").value, 10);
 
+    // Validação
+    if (quantity < 0 || value < 0 || minQuantity < 0) {
+        showModal("Valores negativos não são permitidos.");
+        button.disabled = false;
+        button.textContent = 'Adicionar';
+        return;
+    }
+    
     if (!activeInventoryId) {
         showModal("Nenhum estoque ativo selecionado.");
+        button.disabled = false;
+        button.textContent = 'Adicionar';
         return;
     }
 
@@ -405,9 +446,9 @@ async function handleAddProductFromView(form) {
         const inventoryRef = db.collection("inventories").doc(activeInventoryId);
         await inventoryRef.collection("products").add({
             name: productName,
-            quantity: quantity,
-            value: value,
-            minQuantity: minQuantity,
+            quantity: quantity || 0,
+            value: value || 0,
+            minQuantity: minQuantity || 0,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         });
 
@@ -421,9 +462,66 @@ async function handleAddProductFromView(form) {
     } catch (error) {
         console.error("Erro ao adicionar produto:", error);
         showModal("Ocorreu um erro ao adicionar o produto.");
+    } finally {
+        button.disabled = false;
+        button.textContent = 'Adicionar';
     }
 }
 
+async function handleUpdateProduct(form) {
+    const button = form.querySelector('button[type="submit"]');
+    button.disabled = true;
+    button.textContent = 'Salvando...';
+
+    const productId = form.querySelector("#edit-product-id").value;
+    const newName = form.querySelector("#edit-product-name").value;
+    const newQuantity = parseInt(form.querySelector("#edit-product-quantity").value, 10);
+    const newValue = parseFloat(form.querySelector("#edit-product-value").value);
+    const newMinQuantity = parseInt(form.querySelector("#edit-min-quantity").value, 10);
+
+    // Validação
+    if (newQuantity < 0 || newValue < 0 || newMinQuantity < 0) {
+        showModal("Valores negativos não são permitidos.");
+        button.disabled = false;
+        button.textContent = 'Guardar Alterações';
+        return;
+    }
+    
+    if (!activeInventoryId || !productId) {
+        button.disabled = false;
+        button.textContent = 'Guardar Alterações';
+        return;
+    }
+
+    try {
+        const productRef = db.collection("inventories").doc(activeInventoryId).collection("products").doc(productId);
+        const productDoc = await productRef.get();
+        const oldQuantity = productDoc.data().quantity;
+
+        await productRef.update({
+            name: newName,
+            quantity: newQuantity || 0,
+            value: newValue || 0,
+            minQuantity: newMinQuantity || 0
+        });
+
+        const inventoryDoc = await db.collection("inventories").doc(activeInventoryId).get();
+        const inventoryName = inventoryDoc.data().name;
+        const detail = `Quantidade alterada de ${oldQuantity} para ${newQuantity}`;
+        logMovement(activeInventoryId, inventoryName, newName, "Ajuste", detail);
+
+        showToast("Produto atualizado com sucesso!");
+        closeModal(editModal);
+    } catch (error) {
+        console.error("Erro ao atualizar produto:", error);
+        showModal("Falha ao atualizar o produto.");
+    } finally {
+        button.disabled = false;
+        button.textContent = 'Guardar Alterações';
+    }
+}
+
+// ... (Mantenha o restante das funções como estão) ...
 async function handleAddInventory(form) {
   const inventoryName = form.querySelector("#inventory-name").value;
 
@@ -513,46 +611,49 @@ function handleDeleteProduct(productId, productName) {
   });
 }
 
-function openEditModal(productId, currentName, currentQuantity, currentValue) {
-  document.getElementById('edit-product-id').value = productId;
-  document.getElementById('edit-product-name').value = currentName;
-  document.getElementById('edit-product-quantity').value = currentQuantity;
-  document.getElementById('edit-product-value').value = currentValue || 0;
-  editModal.style.display = 'flex';
-}
+async function handleConsumeProduct(productId, productName) {
+    if (!activeInventoryId) return;
 
-async function handleUpdateProduct(form) {
-    const productId = form.querySelector("#edit-product-id").value;
-    const newName = form.querySelector("#edit-product-name").value;
-    const newQuantity = parseInt(form.querySelector("#edit-product-quantity").value, 10);
-    const newValue = parseFloat(form.querySelector("#edit-product-value").value) || 0;
-    const newMinQuantity = parseInt(form.querySelector("#edit-min-quantity").value, 10) || 0;
-
-    if (!activeInventoryId || !productId) return;
+    const productRef = db.collection("inventories").doc(activeInventoryId).collection("products").doc(productId);
 
     try {
-        const productRef = db.collection("inventories").doc(activeInventoryId).collection("products").doc(productId);
-        const productDoc = await productRef.get();
-        const oldQuantity = productDoc.data().quantity;
+        await db.runTransaction(async (transaction) => {
+            const productDoc = await transaction.get(productRef);
+            if (!productDoc.exists) {
+                throw "Produto não encontrado!";
+            }
 
-        await productRef.update({
-            name: newName,
-            quantity: newQuantity,
-            value: newValue,
-            minQuantity: newMinQuantity
+            const currentQuantity = productDoc.data().quantity;
+            if (currentQuantity <= 0) {
+                showToast(`"${productName}" já está com o estoque zerado.`, "error");
+                return; 
+            }
+
+            transaction.update(productRef, {
+                quantity: firebase.firestore.FieldValue.increment(-1)
+            });
         });
 
         const inventoryDoc = await db.collection("inventories").doc(activeInventoryId).get();
         const inventoryName = inventoryDoc.data().name;
-        const detail = `Quantidade alterada de ${oldQuantity} para ${newQuantity}`;
-        logMovement(activeInventoryId, inventoryName, newName, "Ajuste", detail);
-
-        showToast("Produto atualizado com sucesso!");
-        closeModal(editModal);
+        logMovement(activeInventoryId, inventoryName, productName, "Ajuste", "Consumido 1 unidade");
+        
     } catch (error) {
-        console.error("Erro ao atualizar produto:", error);
-        showModal("Falha ao atualizar o produto.");
+        console.error("Erro ao consumir produto:", error);
+        showModal("Não foi possível consumir o item.");
     }
+}
+
+
+function openEditModal(productId, currentName, currentQuantity, currentValue) {
+  document.getElementById('edit-product-id').value = productId;
+  document.getElementById('edit-product-name').value = currentName;
+  document.getElementById('edit-product-quantity').value = currentQuantity;
+  document.getElementById('edit-product-value').value = currentValue || ''; // Alterado para string vazia
+  const minQuantityInput = document.getElementById('edit-min-quantity');
+  // Lógica para buscar o minQuantity do produto se necessário, por agora deixamos vazio
+  minQuantityInput.value = '';
+  editModal.style.display = 'flex';
 }
 
 async function handleChangeName(form) {
@@ -757,6 +858,7 @@ function viewInventoryProducts(inventoryId, inventoryName) {
         <td>R$ ${totalValue.toFixed(2).replace('.', ',')}</td>
         <td>
           <div class="product-actions">
+            <button class="action-button consume-button">Consumir</button> 
             <button class="action-button edit-button">Editar</button>
             <button class="action-button delete-button">Excluir</button>
           </div>
@@ -1005,7 +1107,7 @@ function generatePdf() {
         head: [['Data', 'Produto', 'Tipo', 'Detalhes']],
         body: lastReportData,
         theme: 'striped',
-        headStyles: { fillColor: [30, 41, 59] } // Cor do cabeçalho (fundo-sidebar)
+        headStyles: { fillColor: [30, 41, 59] }
     });
     
     const fileName = `Relatorio_${inventoryName.replace(/\s/g, '_')}_${new Date().toLocaleDateString("pt-BR").replace(/\//g, '-')}.pdf`;

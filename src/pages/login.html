@@ -15,6 +15,7 @@
   <body>
     <div id="app-container">
       <img src="../assets/logo7.png" alt="Logo" class="login-logo" />
+
       <div id="login-section">
         <h2>Bem-vindo de volta!</h2>
         <form id="login-form">
@@ -32,8 +33,12 @@
           />
           <button type="submit">Entrar</button>
         </form>
+        <p class="extra-links">
+          <a id="show-reset-password">Esqueceu a senha?</a>
+        </p>
         <p>Ainda não tem conta? <a id="show-register">Registe-se</a></p>
       </div>
+
       <div id="register-section" style="display: none">
         <h2>Crie a sua Conta</h2>
         <form id="register-form">
@@ -57,8 +62,24 @@
           />
           <button type="submit">Registar</button>
         </form>
-        <p>Já tem uma conta? <a id="show-login">Faça o login</a></p>
+        <p>Já tem uma conta? <a id="show-login-from-register">Faça o login</a></p>
       </div>
+      
+      <div id="reset-password-section" style="display: none">
+        <h2>Redefinir Senha</h2>
+        <form id="reset-password-form">
+          <p class="reset-info">Insira seu e-mail e enviaremos um link para você voltar a acessar a sua conta.</p>
+          <input
+            type="email"
+            id="reset-email"
+            placeholder="Seu e-mail de cadastro"
+            required
+          />
+          <button type="submit">Enviar Link de Redefinição</button>
+        </form>
+        <p>Lembrou da senha? <a id="show-login-from-reset">Voltar para o Login</a></p>
+      </div>
+
     </div>
     <div id="alert-modal" class="modal">
       <div class="modal-content">
