@@ -29,36 +29,23 @@ let lastReportData = []; // Armazena os dados do último relatório gerado
 
 // --- TEMPLATES HTML PARA AS PÁGINAS ---
 const templates = {
+  // ATUALIZADO: O template 'inicio' agora é um dashboard
   inicio: `
         <div id="low-stock-alert-container"></div>
-        <div class="card">
-            <h3>Adicionar Novo Produto</h3>
-            <form id="add-product-form">
-                <div class="form-group">
-                    <label for="inventory-select">Adicionar em qual estoque?</label>
-                    <select id="inventory-select" required></select>
+        <div id="home-summary-card" class="card">
+            <h3>Resumo Geral do Estoque</h3>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <p>Quantidade Total de Itens</p>
+                    <span id="global-total-quantity">Carregando...</span>
                 </div>
-                <div class="form-group">
-                    <label for="product-name">Nome do Produto</label>
-                    <input type="text" id="product-name" placeholder="Ex: Arroz 1kg" required />
+                <div class="summary-item">
+                    <p>Valor Total do Estoque</p>
+                    <span id="global-total-value">Carregando...</span>
                 </div>
-                <div class="form-group">
-                    <label for="product-quantity">Quantidade</label>
-                    <input type="number" id="product-quantity" min="0" placeholder="Ex: 10" required />
-                </div>
-                <div class="form-group">
-                    <label for="product-value">Valor Unitário (R$)</label>
-                    <input type="number" id="product-value" min="0" step="0.01" placeholder="Ex: 15.50" required />
-                </div>
-                <div class="form-group">
-                    <label for="add-min-quantity">Qtd. Mínima para Alerta</label>
-                    <input type="number" id="add-min-quantity" min="0" placeholder="Ex: 5" required />
-                </div>
-                <button type="submit">Adicionar ao Estoque</button>
-            </form>
+            </div>
         </div>
     `,
-  // ... (O restante dos templates permanece o mesmo) ...
   estoque: `
         <div class="card">
             <h3>Criar Novo Estoque</h3>
@@ -72,6 +59,7 @@ const templates = {
             <div id="inventory-list"><p>Carregando...</p></div>
         </div>
     `,
+  // ATUALIZADO: Template 'relatorio' sem o card de resumo
   relatorio: `
         <div class="card">
             <h3>Filtros do Relatório</h3>
@@ -98,11 +86,6 @@ const templates = {
                     <button id="generate-pdf-btn">Gerar PDF</button>
                 </div>
             </div>
-        </div>
-        <div id="report-summary" class="card" style="display: none;">
-            <h3>Resumo do Estoque: <span id="summary-inventory-name"></span></h3>
-            <p><strong>Quantidade Total de Itens:</strong> <span id="total-quantity">0</span></p>
-            <p><strong>Valor Total do Estoque:</strong> <span id="total-value">R$ 0,00</span></p>
         </div>
         <div class="card">
             <h3>Movimentações</h3>
@@ -160,7 +143,6 @@ const templates = {
     `,
 };
 
-// ... (Mantenha as funções showToast, showModal, closeModal, applyTheme, openThemeModal como estão) ...
 function showToast(message, type = "success", duration = 3000) {
     const container = document.getElementById("toast-container");
     if (!container) return;
@@ -228,7 +210,7 @@ function loadPage(page) {
   activeListeners = [];
 
   const pageTitles = {
-    inicio: "Adicionar Produto",
+    inicio: "Dashboard",
     estoque: "Gerenciar Estoques",
     relatorio: "Relatórios",
     usuarios: "Gerenciar Usuários",
@@ -263,7 +245,7 @@ auth.onAuthStateChanged((user) => {
 async function initializeApp() {
     const snapshot = await db.collection("inventories").where("members", "array-contains", currentUser.uid).get();
     inventoriesCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    loadPage("estoque");
+    loadPage("inicio"); // Agora inicia na página 'inicio'
 }
 
 logoutButton.addEventListener("click", () => auth.signOut());
@@ -277,7 +259,6 @@ document.addEventListener('submit', (e) => {
     if (formId === 'edit-product-form') handleUpdateProduct(e.target);
     if (formId === 'rename-inventory-form') handleRenameInventory(e.target);
     if (formId === 'add-product-from-view-form') handleAddProductFromView(e.target);
-    if (formId === 'add-product-form') handleAddProduct(e.target);
     if (formId === 'add-inventory-form') handleAddInventory(e.target);
     if (formId === 'invite-user-form') handleInviteUser(e.target);
     if (formId === 'change-name-form') handleChangeName(e.target);
@@ -366,57 +347,6 @@ function logMovement(inventoryId, inventoryName, productName, type, details) {
   });
 }
 
-async function handleAddProduct(form) {
-  const button = form.querySelector('button[type="submit"]');
-  button.disabled = true;
-  button.textContent = 'Adicionando...';
-
-  const inventoryId = form.querySelector("#inventory-select").value;
-  const productName = form.querySelector("#product-name").value;
-  const quantity = parseInt(form.querySelector("#product-quantity").value, 10);
-  const value = parseFloat(form.querySelector("#product-value").value);
-  const minQuantity = parseInt(form.querySelector("#add-min-quantity").value);
-
-  // Validação para números negativos e campos vazios
-  if (quantity < 0 || value < 0 || minQuantity < 0) {
-    showModal("Valores negativos não são permitidos.");
-    button.disabled = false;
-    button.textContent = 'Adicionar ao Estoque';
-    return;
-  }
-
-  if (!inventoryId) {
-    showModal("Por favor, selecione um estoque.");
-    button.disabled = false;
-    button.textContent = 'Adicionar ao Estoque';
-    return;
-  }
-
-  try {
-    const inventoryRef = db.collection("inventories").doc(inventoryId);
-    await inventoryRef.collection("products").add({
-      name: productName,
-      quantity: quantity || 0,
-      value: value || 0,
-      minQuantity: minQuantity || 0,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    });
-
-    const inventoryDoc = await inventoryRef.get();
-    const inventoryName = inventoryDoc.data().name;
-    logMovement(inventoryId, inventoryName, productName, "Entrada", `Adicionado ${quantity} unidade(s)`);
-
-    showToast("Produto adicionado com sucesso!");
-    form.reset();
-  } catch (error) {
-    console.error("Erro ao adicionar produto:", error);
-    showModal("Ocorreu um erro ao adicionar o produto.");
-  } finally {
-    button.disabled = false;
-    button.textContent = 'Adicionar ao Estoque';
-  }
-}
-
 async function handleAddProductFromView(form) {
     const button = form.querySelector('button[type="submit"]');
     button.disabled = true;
@@ -427,7 +357,6 @@ async function handleAddProductFromView(form) {
     const value = parseFloat(form.querySelector("#add-product-value-view").value);
     const minQuantity = parseInt(form.querySelector("#add-min-quantity-view").value, 10);
 
-    // Validação
     if (quantity < 0 || value < 0 || minQuantity < 0) {
         showModal("Valores negativos não são permitidos.");
         button.disabled = false;
@@ -468,60 +397,6 @@ async function handleAddProductFromView(form) {
     }
 }
 
-async function handleUpdateProduct(form) {
-    const button = form.querySelector('button[type="submit"]');
-    button.disabled = true;
-    button.textContent = 'Salvando...';
-
-    const productId = form.querySelector("#edit-product-id").value;
-    const newName = form.querySelector("#edit-product-name").value;
-    const newQuantity = parseInt(form.querySelector("#edit-product-quantity").value, 10);
-    const newValue = parseFloat(form.querySelector("#edit-product-value").value);
-    const newMinQuantity = parseInt(form.querySelector("#edit-min-quantity").value, 10);
-
-    // Validação
-    if (newQuantity < 0 || newValue < 0 || newMinQuantity < 0) {
-        showModal("Valores negativos não são permitidos.");
-        button.disabled = false;
-        button.textContent = 'Guardar Alterações';
-        return;
-    }
-    
-    if (!activeInventoryId || !productId) {
-        button.disabled = false;
-        button.textContent = 'Guardar Alterações';
-        return;
-    }
-
-    try {
-        const productRef = db.collection("inventories").doc(activeInventoryId).collection("products").doc(productId);
-        const productDoc = await productRef.get();
-        const oldQuantity = productDoc.data().quantity;
-
-        await productRef.update({
-            name: newName,
-            quantity: newQuantity || 0,
-            value: newValue || 0,
-            minQuantity: newMinQuantity || 0
-        });
-
-        const inventoryDoc = await db.collection("inventories").doc(activeInventoryId).get();
-        const inventoryName = inventoryDoc.data().name;
-        const detail = `Quantidade alterada de ${oldQuantity} para ${newQuantity}`;
-        logMovement(activeInventoryId, inventoryName, newName, "Ajuste", detail);
-
-        showToast("Produto atualizado com sucesso!");
-        closeModal(editModal);
-    } catch (error) {
-        console.error("Erro ao atualizar produto:", error);
-        showModal("Falha ao atualizar o produto.");
-    } finally {
-        button.disabled = false;
-        button.textContent = 'Guardar Alterações';
-    }
-}
-
-// ... (Mantenha o restante das funções como estão) ...
 async function handleAddInventory(form) {
   const inventoryName = form.querySelector("#inventory-name").value;
 
@@ -649,11 +524,67 @@ function openEditModal(productId, currentName, currentQuantity, currentValue) {
   document.getElementById('edit-product-id').value = productId;
   document.getElementById('edit-product-name').value = currentName;
   document.getElementById('edit-product-quantity').value = currentQuantity;
-  document.getElementById('edit-product-value').value = currentValue || ''; // Alterado para string vazia
-  const minQuantityInput = document.getElementById('edit-min-quantity');
-  // Lógica para buscar o minQuantity do produto se necessário, por agora deixamos vazio
-  minQuantityInput.value = '';
+  document.getElementById('edit-product-value').value = currentValue || '';
+  // Precisamos buscar o valor atual de minQuantity para exibir no modal
+  const productRef = db.collection("inventories").doc(activeInventoryId).collection("products").doc(productId);
+  productRef.get().then(doc => {
+      if (doc.exists) {
+          document.getElementById('edit-min-quantity').value = doc.data().minQuantity || '';
+      }
+  });
   editModal.style.display = 'flex';
+}
+
+async function handleUpdateProduct(form) {
+    const button = form.querySelector('button[type="submit"]');
+    button.disabled = true;
+    button.textContent = 'Salvando...';
+
+    const productId = form.querySelector("#edit-product-id").value;
+    const newName = form.querySelector("#edit-product-name").value;
+    const newQuantity = parseInt(form.querySelector("#edit-product-quantity").value, 10);
+    const newValue = parseFloat(form.querySelector("#edit-product-value").value);
+    const newMinQuantity = parseInt(form.querySelector("#edit-min-quantity").value, 10);
+
+    if (newQuantity < 0 || newValue < 0 || newMinQuantity < 0) {
+        showModal("Valores negativos não são permitidos.");
+        button.disabled = false;
+        button.textContent = 'Guardar Alterações';
+        return;
+    }
+    
+    if (!activeInventoryId || !productId) {
+        button.disabled = false;
+        button.textContent = 'Guardar Alterações';
+        return;
+    }
+
+    try {
+        const productRef = db.collection("inventories").doc(activeInventoryId).collection("products").doc(productId);
+        const productDoc = await productRef.get();
+        const oldQuantity = productDoc.data().quantity;
+
+        await productRef.update({
+            name: newName,
+            quantity: newQuantity || 0,
+            value: newValue || 0,
+            minQuantity: newMinQuantity || 0
+        });
+
+        const inventoryDoc = await db.collection("inventories").doc(activeInventoryId).get();
+        const inventoryName = inventoryDoc.data().name;
+        const detail = `Quantidade alterada de ${oldQuantity} para ${newQuantity}`;
+        logMovement(activeInventoryId, inventoryName, newName, "Ajuste", detail);
+
+        showToast("Produto atualizado com sucesso!");
+        closeModal(editModal);
+    } catch (error) {
+        console.error("Erro ao atualizar produto:", error);
+        showModal("Falha ao atualizar o produto.");
+    } finally {
+        button.disabled = false;
+        button.textContent = 'Guardar Alterações';
+    }
 }
 
 async function handleChangeName(form) {
@@ -700,6 +631,21 @@ async function handleInviteUser(form) {
     }
 
     try {
+        const inventoryRef = db.collection("inventories").doc(inventoryId);
+        const inventoryDoc = await inventoryRef.get();
+
+        if (!inventoryDoc.exists) {
+            showModal("Estoque não encontrado.");
+            return;
+        }
+
+        const members = inventoryDoc.data().members || [];
+        
+        if (members.length >= 5) {
+            showModal("Este estoque já atingiu o limite de 5 membros.");
+            return;
+        }
+
         const userQuery = await db.collection("users").where("email", "==", email).get();
         if (userQuery.empty) {
             showModal("Usuário não encontrado com este e-mail.");
@@ -707,8 +653,13 @@ async function handleInviteUser(form) {
         }
         const userToAdd = userQuery.docs[0];
         const userId = userToAdd.id;
+        
+        if (members.includes(userId)) {
+            showModal("Este usuário já é membro deste estoque.");
+            return;
+        }
 
-        await db.collection("inventories").doc(inventoryId).update({
+        await inventoryRef.update({
             members: firebase.firestore.FieldValue.arrayUnion(userId)
         });
 
@@ -740,8 +691,8 @@ function handleRemoveUser(userId, userEmail) {
 }
 
 function initInicioPage() {
-    populateInventorySelect('inventory-select', true);
     checkLowStockAndRender();
+    renderGlobalSummary();
 }
 function initEstoquePage() {
     loadInventories();
@@ -826,7 +777,6 @@ function viewInventoryProducts(inventoryId, inventoryName) {
                         <th>Quantidade</th>
                         <th>Valor Unit.</th>
                         <th>Valor Total</th>
-                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody id="product-list-view"></tbody>
@@ -846,6 +796,12 @@ function viewInventoryProducts(inventoryId, inventoryName) {
     products.forEach(product => {
       const row = document.createElement("tr");
       const totalValue = (product.quantity || 0) * (product.value || 0);
+      
+      // --- INÍCIO DA CORREÇÃO ---
+      // Verifica se a quantidade é 0 para desativar o botão
+      const isOutOfStock = product.quantity <= 0;
+      // --- FIM DA CORREÇÃO ---
+
       row.className = "product-item";
       row.dataset.id = product.id;
       row.dataset.name = product.name;
@@ -858,7 +814,7 @@ function viewInventoryProducts(inventoryId, inventoryName) {
         <td>R$ ${totalValue.toFixed(2).replace('.', ',')}</td>
         <td>
           <div class="product-actions">
-            <button class="action-button consume-button">Consumir</button> 
+            <button class="action-button consume-button" ${isOutOfStock ? 'disabled' : ''}>Consumir</button> 
             <button class="action-button edit-button">Editar</button>
             <button class="action-button delete-button">Excluir</button>
           </div>
@@ -888,62 +844,12 @@ async function loadReport(inventoryId, month, year) {
     activeListeners = [];
     
     const reportBody = document.getElementById("report-list-body");
-    const summaryCard = document.getElementById("report-summary");
-    const totalQuantitySpan = document.getElementById("total-quantity");
-    const totalValueSpan = document.getElementById("total-value");
-    const summaryTitleSpan = document.getElementById("summary-inventory-name");
 
     if (!inventoryId) {
-        reportBody.innerHTML = '<tr><td colspan="4">Selecione um estoque.</td></tr>';
-        summaryCard.style.display = "none";
+        reportBody.innerHTML = '<tr><td colspan="4">Selecione um estoque para começar.</td></tr>';
         lastReportData = [];
         return;
     }
-    
-    summaryCard.style.display = "grid";
-    const inventorySelect = document.getElementById('report-inventory-select');
-    summaryTitleSpan.textContent = inventorySelect.options[inventorySelect.selectedIndex].text;
-
-
-    let productsQuery;
-    if (inventoryId === "all") {
-        const userInventories = inventoriesCache.map(inv => inv.id);
-        if (userInventories.length === 0) {
-            summaryCard.style.display = "none";
-            reportBody.innerHTML = '<tr><td colspan="4">Você não tem acesso a nenhum estoque.</td></tr>';
-            lastReportData = [];
-            return;
-        }
-        productsQuery = db.collectionGroup("products");
-    } else {
-        productsQuery = db.collection("inventories").doc(inventoryId).collection("products");
-    }
-
-    const productsListener = productsQuery.onSnapshot(async snapshot => {
-        let totalQuantity = 0;
-        let totalValue = 0;
-        let products = [];
-
-        if (inventoryId === 'all') {
-            const userInventories = inventoriesCache.map(inv => inv.id);
-            snapshot.forEach(doc => {
-                if(userInventories.includes(doc.ref.parent.parent.id)){
-                    products.push(doc.data());
-                }
-            });
-        } else {
-            snapshot.forEach(doc => products.push(doc.data()));
-        }
-
-        products.forEach(product => {
-            totalQuantity += product.quantity || 0;
-            totalValue += (product.quantity || 0) * (product.value || 0);
-        });
-
-        totalQuantitySpan.textContent = totalQuantity;
-        totalValueSpan.textContent = `R$ ${totalValue.toFixed(2).replace('.', ',')}`;
-    });
-    activeListeners.push(productsListener);
 
     let movementsQuery = db.collection("movements");
 
@@ -1075,6 +981,48 @@ async function checkLowStockAndRender() {
     }
 }
 
+function renderGlobalSummary() {
+    const totalQuantitySpan = document.getElementById("global-total-quantity");
+    const totalValueSpan = document.getElementById("global-total-value");
+    if (!totalQuantitySpan || !totalValueSpan) return;
+
+    const userInventories = inventoriesCache.map(inv => inv.id);
+    if (userInventories.length === 0) {
+        totalQuantitySpan.textContent = "0";
+        totalValueSpan.textContent = "R$ 0,00";
+        return;
+    }
+
+    let inventoryTotals = {};
+
+    const updateTotalSummary = () => {
+        let grandTotalQuantity = 0;
+        let grandTotalValue = 0;
+        for (const id in inventoryTotals) {
+            grandTotalQuantity += inventoryTotals[id].quantity;
+            grandTotalValue += inventoryTotals[id].value;
+        }
+        totalQuantitySpan.textContent = grandTotalQuantity;
+        totalValueSpan.textContent = `R$ ${grandTotalValue.toFixed(2).replace('.', ',')}`;
+    };
+
+    userInventories.forEach(id => {
+        const productsQuery = db.collection("inventories").doc(id).collection("products");
+        const listener = productsQuery.onSnapshot(snapshot => {
+            let currentInventoryQuantity = 0;
+            let currentInventoryValue = 0;
+            snapshot.forEach(doc => {
+                const product = doc.data();
+                currentInventoryQuantity += product.quantity || 0;
+                currentInventoryValue += (product.quantity || 0) * (product.value || 0);
+            });
+            inventoryTotals[id] = { quantity: currentInventoryQuantity, value: currentInventoryValue };
+            updateTotalSummary();
+        });
+        activeListeners.push(listener);
+    });
+}
+
 function generatePdf() {
     const doc = new jsPDF();
     const inventorySelect = document.getElementById('report-inventory-select');
@@ -1085,9 +1033,6 @@ function generatePdf() {
     const month = monthSelect.options[monthSelect.selectedIndex].text;
     const year = yearInput.value || 'Todos';
     
-    const totalQuantity = document.getElementById('total-quantity').textContent;
-    const totalValue = document.getElementById('total-value').textContent;
-
     doc.setFontSize(18);
     doc.text("Relatório de Movimentações de Estoque", 14, 22);
     doc.setFontSize(11);
@@ -1096,14 +1041,8 @@ function generatePdf() {
     doc.text(`Estoque: ${inventoryName}`, 14, 32);
     doc.text(`Período: ${month} de ${year}`, 14, 38);
     
-    doc.setFontSize(12);
-    doc.text("Resumo do Estoque Atual:", 14, 50);
-    doc.setFontSize(10);
-    doc.text(`- Quantidade Total de Itens: ${totalQuantity}`, 14, 56);
-    doc.text(`- Valor Total Estimado: ${totalValue}`, 14, 62);
-
     doc.autoTable({
-        startY: 70,
+        startY: 50,
         head: [['Data', 'Produto', 'Tipo', 'Detalhes']],
         body: lastReportData,
         theme: 'striped',

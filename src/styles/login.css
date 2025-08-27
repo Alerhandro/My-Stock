@@ -3,7 +3,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #395886;
+  background-color: #e86a74;
 }
 #app-container {
   width: 400px;
@@ -11,8 +11,8 @@ body {
   padding: 40px;
   border-radius: 12px;
   box-shadow: var(--sombra);
-  border: 2px solid #3968af57;
-  background-color: #5d83bc;
+  border: 2px solid #df57af00;
+  background-color: #FFFFFF;
 }
 .login-logo {
   display: block;
@@ -22,18 +22,18 @@ body {
   margin-top: 0px;
 }
 h2 {
-  color: white;
+  color: #4A4A4A;
   text-align: center;
   margin-top: 0;
   margin-bottom: 30px;
 }
 p {
   text-align: center;
-  color: white;
+  color: #888888;
   font-size: 14px;
 }
 a {
-  color: #0866ff;
+  color: #3678e4;
   cursor: pointer;
   text-decoration: none;
   font-weight: 500;
@@ -97,7 +97,23 @@ a:hover {
   margin: 0 auto;
 }
 
-/* CORREÇÃO PARA O TEXTO DO MODAL */
 .modal-content #modal-message {
   color: var(--texto-principal);
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background-color:#e86a74;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.2s, transform 0.2s;
+}
+button:hover {
+    background-color: #ca5d66;
+    transform: translateY(-1px);
 }
