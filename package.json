@@ -1,6 +1,6 @@
 {
   "name": "sistema-de-estoque",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Sistema de gerenciamento de estoque com Electron e Firebase.",
   "main": "src/main.js",
   "scripts": {
@@ -15,38 +15,39 @@
   },
   "dependencies": {
     "dotenv": "^17.2.1",
+    "electron-log": "^5.4.3",
     "electron-updater": "^6.6.2",
     "firebase": "^12.1.0",
     "jspdf": "^3.0.1",
     "jspdf-autotable": "^5.0.2"
   },
   "build": {
-  "appId": "com.seu-nome.mystock",
-  "productName": "Despensa",
-  "files": [
-    "src/**/*",
-    "node_modules/**/*",
-    "package.json"
-  ],
-  "extraResources": [
-    {
-      "from": ".env",
-      "to": ".env"
+    "appId": "com.seu-nome.mystock",
+    "productName": "Despensa",
+    "files": [
+      "src/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": ".env",
+        "to": ".env"
+      }
+    ],
+    "publish": {
+      "provider": "github"
+    },
+    "directories": {
+      "output": "release/"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "src/assets/favicon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
     }
-  ],
-  "publish": {
-    "provider": "github"
-  },
-  "directories": {
-    "output": "release/"
-  },
-  "win": {
-    "target": "nsis",
-    "icon": "src/assets/favicon.ico"
-  },
-  "nsis": {
-    "oneClick": false,
-    "allowToChangeInstallationDirectory": true
   }
-}
 }
