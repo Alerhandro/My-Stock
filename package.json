@@ -1,6 +1,6 @@
 {
   "name": "sistema-de-estoque",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Sistema de gerenciamento de estoque com Electron e Firebase.",
   "main": "src/main.js",
   "scripts": {
