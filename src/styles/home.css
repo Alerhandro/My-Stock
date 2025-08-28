@@ -640,3 +640,99 @@ body.dark-theme #global-spinner {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* --- ESTILOS PARA TOOLTIP --- */
+.label-with-tooltip {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Espaçamento entre o label e o ícone */
+  margin-bottom: 5px; /* Espaçamento padrão do label */
+}
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tooltip-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: var(--texto-secundario);
+  color: var(--fundo-secundario);
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  width: 220px;
+  background-color: var(--fundo-sidebar);
+  color: var(--texto-sidebar);
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%; /* Posição acima do ícone */
+  left: 50%;
+  margin-left: -110px; /* Metade da largura para centralizar */
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 13px;
+  font-weight: 400;
+  box-shadow: var(--sombra);
+}
+
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* --- ESTILOS PARA FAQ --- */
+.faq-item {
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.faq-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.faq-item h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: var(--cor-primaria);
+}
+
+.faq-item p {
+  line-height: 1.6;
+  color: var(--texto-secundario);
+}
+
+/* --- ESTILOS PARA TELA VAZIA --- */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  border: 2px dashed var(--cor-borda);
+  border-radius: 12px;
+}
+
+.empty-state p {
+  font-size: 18px;
+  color: var(--texto-secundario);
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.empty-state .small-button {
+  width: auto;
+  padding: 10px 20px;
+}

@@ -1,5 +1,8 @@
+// main.js
+
 const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
+const { autoUpdater } = require("electron-updater"); // <-- 1. IMPORTAR
 
 // --- CORREÇÃO DEFINITIVA APLICADA AQUI ---
 // Define o caminho do .env de forma inteligente.
@@ -31,7 +34,12 @@ function createWindow() {
   // mainWindow.webContents.openDevTools();
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
+
+  // <-- 2. ADICIONAR ESTA LINHA
+  autoUpdater.checkForUpdatesAndNotify();
+});
 
 ipcMain.on("navigate", (event, page) => {
   mainWindow.loadFile(path.join(__dirname, `pages/${page}`));

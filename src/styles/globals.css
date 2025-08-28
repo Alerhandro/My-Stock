@@ -56,20 +56,20 @@ body.sunset-theme {
     --cor-borda: #44403c;
 }
 
-/* NOVO: PASTEL (CLARO) */
-body.pastel-light-theme {
-    --fundo-principal: #fcfee7;
-    --fundo-secundario: #ffffff;
-    --fundo-sidebar: #f2f7b6;
-    --texto-principal: #4a5568;
-    --texto-secundario: #718096;
-    --texto-sidebar: #4a5568;
-    --cor-primaria: #ffb6c1;
-    --cor-primaria-hover: #ff9aab;
-    --cor-borda: #e2e8f0;
+/* TEMA PÚRPURA */
+body.purple-elegant-theme {
+    --fundo-principal: #f8f0f8;             
+    --fundo-secundario: #ffffff;           
+    --fundo-sidebar: #3a2372;               
+    --texto-principal: #2d2838;             
+    --texto-secundario: #5b556b;            
+    --texto-sidebar: #e0d9e8;               
+    --cor-primaria: #8a63d2;                
+    --cor-primaria-hover: #7b4fb0;           
+    --cor-borda: #e4dceb;                   
 }
 
-/* NOVO: CELESTE (ESCURO) */
+/* TEMA CELESTE (ESCURO) */
 body.pastel-dark-theme {
     --fundo-principal: #2d3748;
     --fundo-secundario: #4a5568;
