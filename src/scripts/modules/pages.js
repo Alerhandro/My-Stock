@@ -5,7 +5,7 @@ import { clearActiveListeners } from './state.js';
 
 const pageTitles = {
     inicio: "Dashboard",
-    estoque: "Gerenciar Estoques",
+    estoque: "Gerenciar Despensa",
     relatorio: "Relatórios",
     usuarios: "Gerenciar Usuários",
     configuracoes: "Configurações",
@@ -16,14 +16,14 @@ const templates = {
     inicio: `
         <div id="low-stock-alert-container"></div>
         <div id="home-summary-card" class="card">
-            <h3>Resumo Geral do Estoque</h3>
+            <h3>Resumo Geral da Despensa</h3>
             <div class="summary-grid">
                 <div class="summary-item">
                     <p>Quantidade Total de Itens</p>
                     <span id="global-total-quantity">Carregando...</span>
                 </div>
                 <div class="summary-item">
-                    <p>Valor Total do Estoque</p>
+                    <p>Valor Total da Despensa</p>
                     <span id="global-total-value">Carregando...</span>
                 </div>
             </div>
@@ -31,14 +31,14 @@ const templates = {
     `,
     estoque: `
         <div class="card">
-            <h3>Criar Novo Estoque</h3>
+            <h3>Criar Nova Despensa</h3>
             <form id="add-inventory-form">
-                <input type="text" id="inventory-name" placeholder="Nome do Estoque (ex: Cozinha)" required />
-                <button type="submit">Criar Estoque</button>
+                <input type="text" id="inventory-name" placeholder="Nome da Despensa (ex: Cozinha)" required />
+                <button type="submit">Criar Despensa</button>
             </form>
         </div>
         <div class="card">
-            <h3>Meus Estoques</h3>
+            <h3>Minhas Despensas</h3>
             <div id="inventory-list"><p>Carregando...</p></div>
         </div>
     `,
@@ -47,7 +47,7 @@ const templates = {
             <h3>Filtros do Relatório</h3>
             <div class="report-filters">
                 <div class="form-group">
-                    <label for="report-inventory-select">Filtrar por Estoque</label>
+                    <label for="report-inventory-select">Filtrar por despensas</label>
                     <select id="report-inventory-select"></select>
                 </div>
                 <div class="form-group">
@@ -82,15 +82,15 @@ const templates = {
                             <th>Usuário</th> 
                         </tr>
                     </thead>
-                    <tbody id="report-list-body"><tr><td colspan="5">Selecione um estoque para ver as movimentações.</td></tr></tbody>
+                    <tbody id="report-list-body"><tr><td colspan="5">Selecione uma despensa para ver as movimentações.</td></tr></tbody>
                 </table>
             </div>
         </div>
     `,
     usuarios: `
         <div class="card">
-            <h3>Gerenciar Acesso aos Estoques</h3>
-            <div class="form-group"><label for="user-inventory-select">Selecione um Estoque para Gerenciar</label><select id="user-inventory-select"></select></div>
+            <h3>Gerenciar Acesso as Despensas</h3>
+            <div class="form-group"><label for="user-inventory-select">Selecione uma Despensas para Gerenciar</label><select id="user-inventory-select"></select></div>
         </div>
         <div id="user-management-content" style="display: none;"><div class="user-management-grid">
             <div class="card">
@@ -102,7 +102,7 @@ const templates = {
             </div>
             <div class="card">
                 <h3>Membros Atuais</h3>
-                <div id="user-list"><p>Selecione um estoque para ver os membros.</p></div>
+                <div id="user-list"><p>Selecione uma Despensas para ver os membros.</p></div>
             </div>
         </div></div>
     `,
@@ -136,18 +136,18 @@ const templates = {
       <h3>Perguntas Frequentes (FAQ)</h3>
 
       <div class="faq-item">
-        <h4>Como convido um amigo para o meu estoque?</h4>
-        <p>Vá para a seção "Usuários", selecione o estoque desejado na lista, digite o e-mail do seu amigo no campo "Convidar Novo Usuário" e clique em "Convidar". O utilizador precisa de já ter uma conta registada na aplicação.</p>
+        <h4>Como convido um amigo para a minha Despensas?</h4>
+        <p>Vá para a seção "Usuários", selecione a despensa desejada na lista, digite o e-mail do seu amigo no campo "Convidar Novo Usuário" e clique em "Convidar". O utilizador precisa de já ter uma conta registada na aplicação.</p>
       </div>
 
       <div class="faq-item">
         <h4>Como gero um relatório em PDF?</h4>
-        <p>Vá para a seção "Relatório", use os filtros para selecionar o estoque, o mês e o ano que deseja analisar. As movimentações aparecerão na tabela abaixo. Em seguida, clique no botão "Gerar PDF" para descarregar o ficheiro.</p>
+        <p>Vá para a seção "Relatório", use os filtros para selecionar a despensa, o mês e o ano que deseja analisar. As movimentações aparecerão na tabela abaixo. Em seguida, clique no botão "Gerar PDF" para descarregar o ficheiro.</p>
       </div>
 
       <div class="faq-item">
         <h4>Para que serve a "Quantidade Mínima para Alerta"?</h4>
-        <p>Este valor define um limite de quantidade. Quando a quantidade de um produto for igual ou inferior a este número, um aviso de "Estoque Baixo" será exibido de forma destacada na página "Início", ajudando-o a saber quando precisa de repor os seus itens.</p>
+        <p>Este valor define um limite de quantidade. Quando a quantidade de um produto for igual ou inferior a este número, um aviso de "Despensa Baixa" será exibido de forma destacada na página "Início", ajudando-o a saber quando precisa de repor os seus itens.</p>
       </div>
     </div>
   `,

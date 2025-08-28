@@ -21,7 +21,7 @@ export function generatePdf(jsPDF) {
     const year = yearInput.value || 'Todos';
     
     doc.setFontSize(18);
-    doc.text("Relatório de Movimentações de Estoque", 14, 22);
+    doc.text("Relatório de Movimentações da Despensa", 14, 22);
     doc.setFontSize(11);
     doc.setTextColor(100);
 
@@ -39,9 +39,7 @@ export function generatePdf(jsPDF) {
     const fileName = `Relatorio_${inventoryName.replace(/\s/g, '_')}_${new Date().toLocaleDateString("pt-BR").replace(/\//g, '-')}.pdf`;
     doc.save(fileName);
 }
-// --- FIM DA CORREÇÃO ---
 
-// ... (o resto do ficheiro firestore.js continua aqui)
 // (a função logMovement, handleDeleteInventory, etc.)
 export function logMovement(inventoryId, inventoryName, productName, type, details) {
   db.collection("movements").add({
@@ -57,7 +55,7 @@ export function logMovement(inventoryId, inventoryName, productName, type, detai
 }
 
 export function handleDeleteInventory(inventoryId, inventoryName) {
-  ui.showModal(`Tem certeza que deseja apagar o estoque "${inventoryName}" e todos os seus produtos? Esta ação não pode ser desfeita.`, "confirm", async () => {
+  ui.showModal(`Tem certeza que deseja apagar a despensa "${inventoryName}" e todos os seus produtos? Esta ação não pode ser desfeita.`, "confirmar", async () => {
     try {
       const inventoryRef = db.collection("inventories").doc(inventoryId);
       const batch = db.batch();
@@ -76,10 +74,10 @@ export function handleDeleteInventory(inventoryId, inventoryName) {
 
       await batch.commit();
 
-      ui.showToast("Estoque apagado com sucesso!");
+      ui.showToast("Despensa apagado com sucesso!");
     } catch (error) {
-      console.error("Erro ao apagar estoque:", error);
-      ui.showModal("Ocorreu um erro ao apagar o estoque.");
+      console.error("Erro ao apagar despensa:", error);
+      ui.showModal("Ocorreu um erro ao apagar a despensa.");
     }
   });
 }
@@ -102,7 +100,7 @@ export async function handleAddProductFromView(form) {
     }
     
     if (!state.activeInventoryId) {
-        ui.showModal("Nenhum estoque ativo selecionado.");
+        ui.showModal("Nenhuma despensa ativa selecionada.");
         button.disabled = false;
         button.textContent = 'Adicionar';
         return;
@@ -144,11 +142,11 @@ export async function handleAddInventory(form) {
       members: [state.currentUser.uid],
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
-    ui.showToast("Estoque criado com sucesso!");
+    ui.showToast("Despensa criada com sucesso!");
     form.reset();
   } catch (error) {
-    console.error("Erro ao criar estoque:", error);
-    ui.showModal("Ocorreu um erro ao criar o estoque.");
+    console.error("Erro ao criar despensa:", error);
+    ui.showModal("Ocorreu um erro ao criar a despensa.");
   }
 }
 
@@ -168,22 +166,22 @@ export async function handleRenameInventory(form) {
         await db.collection("inventories").doc(inventoryId).update({
             name: newName
         });
-        ui.showToast("Estoque renomeado com sucesso!");
+        ui.showToast("Despensa renomeada com sucesso!");
         ui.closeModal(ui.renameInventoryModal);
     } catch (error) {
-        console.error("Erro ao renomear estoque:", error);
-        ui.showModal("Falha ao renomear o estoque.");
+        console.error("Erro ao renomear despensa:", error);
+        ui.showModal("Falha ao renomear a despensa.");
     }
 }
 
 export function handleDeleteProduct(productId, productName) {
   if (!state.activeInventoryId) return;
-  ui.showModal(`Tem certeza de que deseja excluir o produto "${productName}"?`, "confirm", async () => {
+  ui.showModal(`Tem certeza de que deseja excluir o produto "${productName}"?`, "confirmar", async () => {
     try {
       await db.collection("inventories").doc(state.activeInventoryId).collection("products").doc(productId).delete();
       const inventoryDoc = await db.collection("inventories").doc(state.activeInventoryId).get();
       const inventoryName = inventoryDoc.data().name;
-      logMovement(state.activeInventoryId, inventoryName, productName, "Exclusão", `Produto removido do estoque`);
+      logMovement(state.activeInventoryId, inventoryName, productName, "Exclusão", `Produto removido da despensa`);
       ui.showToast("Produto excluído com sucesso!");
     } catch (error) {
       console.error("Erro ao excluir produto:", error);
@@ -206,7 +204,7 @@ export async function handleConsumeProduct(productId, productName) {
 
             const currentQuantity = productDoc.data().quantity;
             if (currentQuantity <= 0) {
-                ui.showToast(`"${productName}" já está com o estoque zerado.`, "error");
+                ui.showToast(`"${productName}" já está com a despensa zerada.`, "error");
                 return; 
             }
 
@@ -332,7 +330,7 @@ export async function handleInviteUser(form) {
     const inventoryId = document.getElementById('user-inventory-select').value;
 
     if (!inventoryId) {
-        ui.showModal("Por favor, selecione um estoque primeiro.");
+        ui.showModal("Por favor, selecione uma despensa primeiro.");
         return;
     }
 
@@ -341,14 +339,14 @@ export async function handleInviteUser(form) {
         const inventoryDoc = await inventoryRef.get();
 
         if (!inventoryDoc.exists) {
-            ui.showModal("Estoque não encontrado.");
+            ui.showModal("Despensa não encontrado.");
             return;
         }
 
         const members = inventoryDoc.data().members || [];
         
         if (members.length >= 5) {
-            ui.showModal("Este estoque já atingiu o limite de 5 membros.");
+            ui.showModal("Esta despensa já atingiu o limite de 5 membros.");
             return;
         }
 
@@ -361,7 +359,7 @@ export async function handleInviteUser(form) {
         const userId = userToAdd.id;
         
         if (members.includes(userId)) {
-            ui.showModal("Este usuário já é membro deste estoque.");
+            ui.showModal("Este usuário já é membro desta despensa.");
             return;
         }
 
@@ -382,7 +380,7 @@ export function handleRemoveUser(userId, userEmail) {
   const inventoryId = document.getElementById('user-inventory-select').value;
   if (!inventoryId) return;
 
-  ui.showModal(`Tem certeza que deseja remover ${userEmail} deste estoque?`, "confirm", async () => {
+  ui.showModal(`Tem certeza que deseja remover ${userEmail} desta despensa?`, "confirmar", async () => {
     try {
       await db.collection("inventories").doc(inventoryId).update({
         members: firebase.firestore.FieldValue.arrayRemove(userId)
@@ -399,7 +397,7 @@ export function handleRemoveUser(userId, userEmail) {
 export function populateInventorySelect(selectId, requiredOption = false) {
     const inventorySelect = document.getElementById(selectId);
     if (!inventorySelect) return;
-    inventorySelect.innerHTML = requiredOption ? '<option value="">Selecione um estoque...</option>' : '<option value="all">Todos os Estoques</option>';
+    inventorySelect.innerHTML = requiredOption ? '<option value="">Selecione uma despensa...</option>' : '<option value="all">Todas as despensas</option>';
     state.inventoriesCache.forEach((inv) => {
         const option = document.createElement("option");
         option.value = inv.id;
@@ -418,8 +416,8 @@ export function loadInventories() {
         if (state.inventoriesCache.length === 0) {
             currentListDiv.innerHTML = `
             <div class="empty-state">
-              <p>Você ainda não tem nenhum estoque.</p>
-              <button id="create-first-inventory-btn" class="small-button">Criar meu primeiro estoque</button>
+              <p>Você ainda não tem nenhuma despensa.</p>
+              <button id="create-first-inventory-btn" class="small-button">Criar minha primeira despensa</button>
             </div>
           `;
         } else {
@@ -448,7 +446,7 @@ export function viewInventoryProducts(inventoryId, inventoryName) {
     <button id="back-to-inventories" class="back-button">← Voltar</button>
     <div class="card">
         <div class="card-header">
-            <h3>Produtos no estoque "${inventoryName}"</h3>
+            <h3>Produtos na despensa "${inventoryName}"</h3>
             <button id="add-product-in-view-btn" class="small-button">+ Adicionar Novo</button>
         </div>
         <div class="search-container">
@@ -525,7 +523,7 @@ export function loadReport(inventoryId, month, year) {
     const reportBody = document.getElementById("report-list-body");
 
     if (!inventoryId) {
-        reportBody.innerHTML = '<tr><td colspan="5">Selecione um estoque para começar.</td></tr>';
+        reportBody.innerHTML = '<tr><td colspan="5">Selecione uma despensa para começar.</td></tr>';
         state.setLastReportData([]);
         return;
     }
@@ -610,7 +608,7 @@ export function loadUsersForInventory(inventoryId) {
       if (!userListDiv) return;
       const inventory = doc.data();
       if (!inventory) {
-          userListDiv.innerHTML = "<p>Estoque não encontrado.</p>";
+          userListDiv.innerHTML = "<p>Despensa não encontrada.</p>";
           return;
       }
       const memberPromises = inventory.members.map((uid) => db.collection("users").doc(uid).get());
@@ -675,7 +673,7 @@ export async function checkLowStockAndRender() {
 
         alertContainer.innerHTML = `
             <div class="card low-stock-alert">
-                <h3>⚠️ Alerta de Estoque Baixo</h3>
+                <h3>⚠️ Alerta de Despensa Baixa</h3>
                 <div id="low-stock-list">
                     ${itemsHtml}
                 </div>
