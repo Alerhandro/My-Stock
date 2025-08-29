@@ -15,7 +15,7 @@
   <body>
     <div class="sidebar">
       <div class="logo">
-        <img src="../assets/logod.png" alt="Logo" />
+        <img src="../assets/logo7.png" alt="Logo" />
       </div>
       <nav class="menu">
         <a class="menu-item active" data-page="inicio">Início</a>
@@ -28,7 +28,7 @@
     </div>
     <main class="main-content">
       <header class="header">
-        <h1 id="page-title">Painel de Controle</h1>
+        <h1 id="page-title">Painel de Controlo</h1>
         <div class="user-info">
           <span><strong id="user-display-name"></strong></span>
           <button id="logout-button">Sair</button>
@@ -138,6 +138,16 @@
       </div>
     </div>
 
+    <div id="update-modal" class="modal">
+        <div class="modal-content">
+            <h3>Atualização Disponível</h3>
+            <p>Uma Despensa novinha em folha está à sua espera. Instale a atualização que acabamos de baixar.</p>
+            <div class="modal-buttons">
+                <button id="update-later-button">Depois</button>
+                <button id="update-now-button">Reiniciar Agora</button>
+            </div>
+        </div>
+    </div>
     <div id="toast-container"></div>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>

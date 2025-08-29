@@ -1,5 +1,3 @@
-// Em: src/preload.js
-
 const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("api", {
@@ -9,9 +7,10 @@ contextBridge.exposeInMainWorld("api", {
   receive: (channel, func) => {
     ipcRenderer.on(channel, (event, ...args) => func(...args));
   },
+  onUpdateDownloaded: (callback) => ipcRenderer.on('update_downloaded', callback),
+  restartApp: () => ipcRenderer.send('restart_app'),
 });
 
-// ADICIONE ESTE TRECHO para expor as variáveis de ambiente de forma segura
 contextBridge.exposeInMainWorld("env", {
   apiKey: process.env.API_KEY,
   authDomain: process.env.AUTH_DOMAIN,

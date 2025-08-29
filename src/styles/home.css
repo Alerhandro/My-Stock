@@ -736,3 +736,21 @@ body.dark-theme #global-spinner {
   width: auto;
   padding: 10px 20px;
 }
+
+#update-now-button {
+    width: 150px;
+    background-color: var(--cor-sucesso);
+}
+#update-now-button:hover {
+    background-color: color-mix(in srgb, var(--cor-sucesso) 85%, #000);
+}
+
+#update-later-button {
+    width: 120px;
+    background: transparent;
+    border: 1px solid var(--cor-borda);
+    color: var(--texto-principal);
+}
+#update-later-button:hover {
+    background: var(--fundo-principal);
+}

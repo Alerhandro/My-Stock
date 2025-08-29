@@ -1,7 +1,3 @@
-// home.js
-// Ponto de entrada principal para a lógica da página home.
-// Orquestra os módulos e lida com os eventos principais.
-
 import * as ui from './modules/ui.js';
 import * as firestore from './modules/firestore.js';
 import * as pages from './modules/pages.js';
@@ -29,6 +25,18 @@ async function initializeApp() {
     const snapshot = await db.collection("inventories").where("members", "array-contains", state.currentUser.uid).get();
     state.setInventoriesCache(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     pages.loadPage("inicio");
+
+    // Ouve o evento de atualização do processo principal
+    api.onUpdateDownloaded(() => {
+        const updateModal = document.getElementById('update-modal');
+        const updateNowBtn = document.getElementById('update-now-button');
+        const updateLaterBtn = document.getElementById('update-later-button');
+
+        updateNowBtn.onclick = () => api.restartApp();
+        updateLaterBtn.onclick = () => updateModal.style.display = 'none';
+
+        updateModal.style.display = 'flex';
+    });
 }
 
 // --- EVENT LISTENERS GLOBAIS ---
