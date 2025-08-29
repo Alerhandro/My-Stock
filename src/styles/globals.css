@@ -56,17 +56,16 @@ body.sunset-theme {
     --cor-borda: #44403c;
 }
 
-/* TEMA PÚRPURA */
-body.purple-elegant-theme {
-    --fundo-principal: #f8f0f8;             
-    --fundo-secundario: #ffffff;           
-    --fundo-sidebar: #3a2372;               
-    --texto-principal: #2d2838;             
-    --texto-secundario: #5b556b;            
-    --texto-sidebar: #e0d9e8;               
-    --cor-primaria: #8a63d2;                
-    --cor-primaria-hover: #7b4fb0;           
-    --cor-borda: #e4dceb;                   
+body.carrot-light-theme {
+    --fundo-principal: #fff7ed;       
+    --fundo-secundario: #ffffff;     
+    --fundo-sidebar: #292524;        
+    --texto-principal: #4c2b0a;     
+    --texto-secundario: #7c2d12;    
+    --texto-sidebar: #e0e7ff;        
+    --cor-primaria: #f97316;         
+    --cor-primaria-hover: #ea580c;   
+    --cor-borda: #fed7aa;            
 }
 
 /* TEMA CELESTE (ESCURO) */
@@ -82,6 +81,31 @@ body.pastel-dark-theme {
     --cor-borda: #5a6578;
 }
 
+/* TEMA ROXO LAVANDA */
+body.purple-lavender-theme {
+    --fundo-principal: #f5f3ff;       
+    --fundo-secundario: #ffffff;     
+    --fundo-sidebar: #4c1d95;      
+    --texto-principal: #1e1b4b;    
+    --texto-secundario: #64748b;    
+    --texto-sidebar: #e0e7ff;       
+    --cor-primaria: #8b5cf6;        
+    --cor-primaria-hover: #7c3aed;  
+    --cor-borda: #e0e7ff;            
+}
+
+/* TEMA NÉVOA DE AMETISTA */
+body.purple-amethyst-theme {
+    --fundo-principal: #1e1b4b;      
+    --fundo-secundario: #312e81;      
+    --fundo-sidebar: #282566;       
+    --texto-principal: #e0e7ff;      
+    --texto-secundario: #a5b4fc;     
+    --texto-sidebar: #e0e7ff;      
+    --cor-primaria: #a78bfa;    
+    --cor-primaria-hover: #c4b5fd; 
+    --cor-borda: #4338ca;         
+}
 
 body {
     font-family: 'Roboto', sans-serif;

@@ -48,7 +48,7 @@ export function closeModal(modalElement) {
 }
 
 export function applyTheme(theme) {
-  document.body.classList.remove("dark-theme", "ocean-theme", "sunset-theme", "purple-elegant-theme", "pastel-dark-theme");
+  document.body.classList.remove("dark-theme", "ocean-theme", "pastel-dark-theme", "sunset-theme", "carrot-light-theme", "purple-amethyst-theme", "purple-lavender-theme",);
   if (theme !== "light") {
     document.body.classList.add(theme);
   }
@@ -59,9 +59,12 @@ export function openThemeModal() {
     { value: "light", name: "Claro", color: "#f4f7fa" },
     { value: "dark-theme", name: "Escuro", color: "#0f172a" },
     { value: "ocean-theme", name: "Oceano", color: "#0c4a6e" },
-    { value: "sunset-theme", name: "Cenoura", color: "#f97316" },
-    { value: "purple-elegant-theme", name: "Púrpura", color: "#8a63d2" }, // Alterado aqui
     { value: "pastel-dark-theme", name: "Celeste", color: "#81e6d9" },
+    { value: "carrot-light-theme", name: "Cenoura Suave", color: "#f97316" },
+    { value: "sunset-theme", name: "Cenoura", color: "#f97316" },
+    { value: "purple-lavender-theme", name: "Lavanda", color: "#8b5cf6" }, 
+    { value: "purple-amethyst-theme", name: "Ametista", color: "#a78bfa" }, 
+    
   ];
   const themeGrid = document.getElementById("theme-selector-grid");
   const currentTheme = localStorage.getItem("theme") || "light";
