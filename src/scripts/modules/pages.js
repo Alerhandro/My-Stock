@@ -1,3 +1,6 @@
+// pages.js
+// Gerencia o carregamento de páginas, templates HTML e funções de inicialização.
+
 import * as ui from './ui.js';
 import * as firestore from './firestore.js';
 import * as state from './state.js'; 
@@ -5,7 +8,8 @@ import { clearActiveListeners } from './state.js';
 
 const pageTitles = {
     inicio: "Dashboard",
-    estoque: "Gerenciar Despensa",
+    estoque: "Gerenciar Despensas",
+    "lista-de-compras": "Lista de Compras",
     relatorio: "Relatórios",
     usuarios: "Gerenciar Usuários",
     configuracoes: "Configurações",
@@ -13,13 +17,15 @@ const pageTitles = {
 };
 
 const templates = {
-    inicio: `
+  // --- INÍCIO DA CORREÇÃO ---
+  inicio: `
         <div id="low-stock-alert-container"></div>
+        
         <div id="home-summary-card" class="card">
             <h3>Resumo Geral da Despensa</h3>
             <div class="summary-grid">
                 <div class="summary-item">
-                    <p>Quantidade Total de Itens</p>
+                    <p>Total de Itens</p>
                     <span id="global-total-quantity">Carregando...</span>
                 </div>
                 <div class="summary-item">
@@ -28,8 +34,16 @@ const templates = {
                 </div>
             </div>
         </div>
+
+        <div class="card" id="shopping-list-card">
+            <h3>Lista de Compras</h3>
+            <div id="shopping-list-container">
+                <p>Nenhum item com estoque baixo.</p>
+            </div>
+        </div>
     `,
-    estoque: `
+  // --- FIM DA CORREÇÃO ---
+  estoque: `
         <div class="card">
             <h3>Criar Nova Despensa</h3>
             <form id="add-inventory-form">
@@ -42,12 +56,23 @@ const templates = {
             <div id="inventory-list"><p>Carregando...</p></div>
         </div>
     `,
-    relatorio: `
+  "lista-de-compras": `
+        <div class="card">
+            <div class="card-header">
+                <h3>Itens com Estoque Baixo</h3>
+                <button id="print-shopping-list-btn" class="small-button">Imprimir Lista</button>
+            </div>
+            <div id="shopping-list-page-container">
+                 <p>Nenhum item com estoque baixo no momento.</p>
+            </div>
+        </div>
+    `,
+  relatorio: `
         <div class="card">
             <h3>Filtros do Relatório</h3>
             <div class="report-filters">
                 <div class="form-group">
-                    <label for="report-inventory-select">Filtrar por despensas</label>
+                    <label for="report-inventory-select">Filtrar por Despensa</label>
                     <select id="report-inventory-select"></select>
                 </div>
                 <div class="form-group">
@@ -87,10 +112,10 @@ const templates = {
             </div>
         </div>
     `,
-    usuarios: `
+  usuarios: `
         <div class="card">
-            <h3>Gerenciar Acesso as Despensas</h3>
-            <div class="form-group"><label for="user-inventory-select">Selecione uma Despensas para Gerenciar</label><select id="user-inventory-select"></select></div>
+            <h3>Gerenciar Acesso às Despensas</h3>
+            <div class="form-group"><label for="user-inventory-select">Selecione uma Despensa para Gerenciar</label><select id="user-inventory-select"></select></div>
         </div>
         <div id="user-management-content" style="display: none;"><div class="user-management-grid">
             <div class="card">
@@ -102,11 +127,11 @@ const templates = {
             </div>
             <div class="card">
                 <h3>Membros Atuais</h3>
-                <div id="user-list"><p>Selecione uma Despensas para ver os membros.</p></div>
+                <div id="user-list"><p>Selecione uma despensa para ver os membros.</p></div>
             </div>
         </div></div>
     `,
-    configuracoes: `
+  configuracoes: `
         <div class="card">
             <h3>Configurações de Conta</h3>
             <div class="settings-item">
@@ -136,7 +161,7 @@ const templates = {
       <h3>Perguntas Frequentes (FAQ)</h3>
 
       <div class="faq-item">
-        <h4>Como convido um amigo para a minha Despensas?</h4>
+        <h4>Como convido um amigo para a minha Despensa?</h4>
         <p>Vá para a seção "Usuários", selecione a despensa desejada na lista, digite o e-mail do seu amigo no campo "Convidar Novo Usuário" e clique em "Convidar". O utilizador precisa de já ter uma conta registada na aplicação.</p>
       </div>
 
@@ -164,6 +189,7 @@ export function loadPage(page) {
 
   if (page === "inicio") initInicioPage();
   if (page === "estoque") initEstoquePage();
+  if (page === "lista-de-compras") initShoppingListPage(); 
   if (page === "relatorio") initRelatorioPage();
   if (page === "usuarios") initUsuariosPage();
   if (page === "configuracoes") initConfiguracoesPage();
@@ -198,4 +224,8 @@ function initRelatorioPage() {
 
 function initUsuariosPage() {
     firestore.populateInventorySelect("user-inventory-select", true);
+}
+
+function initShoppingListPage() { 
+    firestore.renderShoppingListPage();
 }

@@ -1,4 +1,7 @@
-import { setConfirmCallback } from './state.js'; // <-- Importa a função necessária
+// ui.js
+// Contém todas as funções relacionadas à manipulação da interface do utilizador (UI).
+
+import { setConfirmCallback } from './state.js';
 
 // --- Seletores de Elementos Globais ---
 export const userDisplayNameSpan = document.getElementById("user-display-name");
@@ -34,9 +37,9 @@ export function showToast(message, type = "success", duration = 3000) {
 
 export function showModal(message, type = "alert", onConfirm = null) {
   modalMessage.textContent = message;
-  modalOkButton.textContent = type === "confirm" ? "Confirmar" : "OK";
-  modalCancelButton.style.display = type === "confirm" ? "inline-block" : "none";
-  setConfirmCallback(onConfirm); 
+  modalOkButton.textContent = type === "confirmar" ? "Confirmar" : "OK";
+  modalCancelButton.style.display = type === "confirmar" ? "inline-block" : "none";
+  setConfirmCallback(onConfirm);
   alertModal.style.display = "flex";
 }
 
@@ -57,7 +60,7 @@ export function openThemeModal() {
     { value: "dark-theme", name: "Escuro", color: "#0f172a" },
     { value: "ocean-theme", name: "Oceano", color: "#0c4a6e" },
     { value: "sunset-theme", name: "Cenoura", color: "#f97316" },
-    { value: "purple-elegant-theme", name: "Púrpura", color: "#8a63d2" },
+    { value: "purple-elegant-theme", name: "Púrpura", color: "#8a63d2" }, // Alterado aqui
     { value: "pastel-dark-theme", name: "Celeste", color: "#81e6d9" },
   ];
   const themeGrid = document.getElementById("theme-selector-grid");

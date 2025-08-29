@@ -7,40 +7,180 @@ import { loadPage } from './pages.js';
 
 const db = firebase.firestore();
 
-// ... (todas as outras funções permanecem exatamente iguais) ...
-
 // --- INÍCIO DA CORREÇÃO ---
-export function generatePdf(jsPDF) {
+
+/**
+ * Renderiza o resumo global no painel (Dashboard).
+ * A nova lógica é mais eficiente e corrige o erro de "tela travada".
+ */
+export function renderGlobalSummary() {
+    const totalQuantitySpan = document.getElementById("global-total-quantity");
+    const totalValueSpan = document.getElementById("global-total-value");
+
+    if (!totalQuantitySpan || !totalValueSpan) return;
+
+    if (state.inventoriesCache.length === 0) {
+        totalQuantitySpan.textContent = "0";
+        totalValueSpan.textContent = "R$ 0,00";
+        return;
+    }
+
+    const inventoryTotals = {}; // Objeto para guardar os totais de cada despensa
+
+    // Função para atualizar a UI com os totais gerais
+    const updateGrandTotals = () => {
+        let grandTotalQuantity = 0;
+        let grandTotalValue = 0;
+        for (const id in inventoryTotals) {
+            grandTotalQuantity += inventoryTotals[id].quantity;
+            grandTotalValue += inventoryTotals[id].value;
+        }
+        totalQuantitySpan.textContent = grandTotalQuantity;
+        totalValueSpan.textContent = `R$ ${grandTotalValue.toFixed(2).replace('.', ',')}`;
+    };
+
+    // Configura um listener em tempo real para os produtos de CADA despensa
+    state.inventoriesCache.forEach(inventory => {
+        inventoryTotals[inventory.id] = { quantity: 0, value: 0 }; // Inicializa o total para esta despensa
+
+        const productsListener = db.collection("inventories").doc(inventory.id).collection("products")
+            .onSnapshot(productsSnapshot => {
+                let currentInventoryQuantity = 0;
+                let currentInventoryValue = 0;
+                productsSnapshot.forEach(doc => {
+                    const product = doc.data();
+                    const quantity = product.quantity || 0;
+                    const value = product.value || 0;
+                    currentInventoryQuantity += quantity;
+                    currentInventoryValue += quantity * value;
+                });
+                
+                // Atualiza os totais para esta despensa específica
+                inventoryTotals[inventory.id] = {
+                    quantity: currentInventoryQuantity,
+                    value: currentInventoryValue,
+                };
+                
+                // Recalcula e renderiza o total geral na tela
+                updateGrandTotals();
+            });
+        
+        // Adiciona o listener ao estado para que ele possa ser limpo ao mudar de página
+        state.addActiveListener(productsListener);
+    });
+}
+
+// --- FIM DA CORREÇÃO ---
+
+function renderShoppingList(container, lowStockProducts) {
+    if (!container) return;
+
+    if (lowStockProducts.length > 0) {
+        let itemsHtml = lowStockProducts.map(p => `
+            <div class="shopping-list-item">
+                <span class="shopping-list-item-name">${p.name}</span>
+                <span class="shopping-list-item-details">
+                    (Estoque: ${p.quantity} | Mínimo: ${p.minQuantity}) - <i>${p.inventoryName}</i>
+                </span>
+            </div>
+        `).join('');
+        container.innerHTML = `<div id="shopping-list-container">${itemsHtml}</div>`;
+    } else {
+        container.innerHTML = "<p>Nenhum item com estoque baixo no momento. Tudo em ordem!</p>";
+    }
+}
+
+export async function renderShoppingListPage() {
+    const pageContainer = document.getElementById("shopping-list-page-container");
+    await checkLowStockAndRender();
+    if (pageContainer) {
+        renderShoppingList(pageContainer, state.shoppingList);
+    }
+}
+
+export async function checkLowStockAndRender() {
+    const alertContainer = document.getElementById("low-stock-alert-container");
+    const shoppingListContainer = document.getElementById("shopping-list-container");
+
+    let lowStockProducts = [];
+
+    for (const inventory of state.inventoriesCache) {
+        const productsRef = db.collection("inventories").doc(inventory.id).collection("products");
+        const snapshot = await productsRef.where("minQuantity", ">", 0).get();
+
+        snapshot.forEach(doc => {
+            const product = doc.data();
+            if (product.quantity <= product.minQuantity) {
+                lowStockProducts.push({
+                    ...product,
+                    id: doc.id,
+                    inventoryName: inventory.name,
+                    inventoryId: inventory.id
+                });
+            }
+        });
+    }
+
+    state.setShoppingList(lowStockProducts);
+
+    if (alertContainer) {
+        if (lowStockProducts.length > 0) {
+            let itemsHtml = lowStockProducts.map(p => `
+                <div class="low-stock-item">
+                    <div class="low-stock-details">
+                        <span class="product-name">${p.name}</span>
+                        <span class="inventory-context">em ${p.inventoryName}</span>
+                    </div>
+                    <div class="low-stock-quantity">
+                        <span>${p.quantity} / ${p.minQuantity}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            alertContainer.innerHTML = `
+                <div class="card low-stock-alert">
+                    <h3>⚠️ Alerta de Despensa Baixa</h3>
+                    <div id="low-stock-list">
+                        ${itemsHtml}
+                    </div>
+                </div>`;
+        } else {
+            alertContainer.innerHTML = "";
+        }
+    }
+    
+    if (shoppingListContainer) {
+        renderShoppingList(shoppingListContainer, lowStockProducts);
+    }
+}
+
+export function generatePdfShoppingList(jsPDF) {
     const doc = new jsPDF();
-    const inventorySelect = document.getElementById('report-inventory-select');
-    const monthSelect = document.getElementById('report-month-select');
-    const yearInput = document.getElementById('report-year-select');
+    const today = new Date().toLocaleDateString("pt-BR");
 
-    const inventoryName = inventorySelect.options[inventorySelect.selectedIndex].text;
-    const month = monthSelect.options[monthSelect.selectedIndex].text;
-    const year = yearInput.value || 'Todos';
-    
-    doc.setFontSize(18);
-    doc.text("Relatório de Movimentações da Despensa", 14, 22);
-    doc.setFontSize(11);
+    doc.setFontSize(22);
+    doc.text("Lista de Compras", 105, 20, { align: 'center' });
+    doc.setFontSize(12);
     doc.setTextColor(100);
+    doc.text(`Gerado em: ${today}`, 105, 28, { align: 'center' });
 
-    doc.text(`Estoque: ${inventoryName}`, 14, 32);
-    doc.text(`Período: ${month} de ${year}`, 14, 38);
-    
+    const tableData = state.shoppingList.map(item => [
+        item.name,
+        `${item.quantity} / ${item.minQuantity}`,
+        item.inventoryName,
+    ]);
+
     doc.autoTable({
-        startY: 50,
-        head: [['Data', 'Produto', 'Tipo', 'Detalhes', 'Usuário']],
-        body: state.lastReportData,
+        startY: 40,
+        head: [['Produto', 'Estoque Atual / Mínimo', 'Despensa']],
+        body: tableData,
         theme: 'striped',
         headStyles: { fillColor: [30, 41, 59] }
     });
     
-    const fileName = `Relatorio_${inventoryName.replace(/\s/g, '_')}_${new Date().toLocaleDateString("pt-BR").replace(/\//g, '-')}.pdf`;
-    doc.save(fileName);
+    doc.save(`Lista_de_Compras_${today.replace(/\//g, '-')}.pdf`);
 }
 
-// (a função logMovement, handleDeleteInventory, etc.)
 export function logMovement(inventoryId, inventoryName, productName, type, details) {
   db.collection("movements").add({
     inventoryId,
@@ -74,7 +214,7 @@ export function handleDeleteInventory(inventoryId, inventoryName) {
 
       await batch.commit();
 
-      ui.showToast("Despensa apagado com sucesso!");
+      ui.showToast("Despensa apagada com sucesso!");
     } catch (error) {
       console.error("Erro ao apagar despensa:", error);
       ui.showModal("Ocorreu um erro ao apagar a despensa.");
@@ -173,7 +313,7 @@ export async function handleRenameInventory(form) {
         ui.showModal("Falha ao renomear a despensa.");
     }
 }
-
+  
 export function handleDeleteProduct(productId, productName) {
   if (!state.activeInventoryId) return;
   ui.showModal(`Tem certeza de que deseja excluir o produto "${productName}"?`, "confirmar", async () => {
@@ -204,7 +344,7 @@ export async function handleConsumeProduct(productId, productName) {
 
             const currentQuantity = productDoc.data().quantity;
             if (currentQuantity <= 0) {
-                ui.showToast(`"${productName}" já está com a despensa zerada.`, "error");
+                ui.showToast(`"${productName}" já está com o estoque zerado.`, "error");
                 return; 
             }
 
@@ -229,7 +369,6 @@ export function openEditModal(productId, currentName, currentQuantity, currentVa
   document.getElementById('edit-product-name').value = currentName;
   document.getElementById('edit-product-quantity').value = currentQuantity;
   document.getElementById('edit-product-value').value = currentValue || '';
-  
   const productRef = db.collection("inventories").doc(state.activeInventoryId).collection("products").doc(productId);
   productRef.get().then(doc => {
       if (doc.exists) {
@@ -339,7 +478,7 @@ export async function handleInviteUser(form) {
         const inventoryDoc = await inventoryRef.get();
 
         if (!inventoryDoc.exists) {
-            ui.showModal("Despensa não encontrado.");
+            ui.showModal("Despensa não encontrada.");
             return;
         }
 
@@ -369,7 +508,7 @@ export async function handleInviteUser(form) {
 
         ui.showToast("Usuário convidado com sucesso!");
         form.reset();
-        loadUsersForInventory(inventoryId);
+        loadUsersForInventory(inventoryId); // Adicione esta linha
     } catch (error) {
         console.error("Erro ao convidar usuário:", error);
         ui.showModal("Ocorreu um erro ao convidar o usuário.");
@@ -386,7 +525,7 @@ export function handleRemoveUser(userId, userEmail) {
         members: firebase.firestore.FieldValue.arrayRemove(userId)
       });
       ui.showToast("Usuário removido com sucesso!");
-      loadUsersForInventory(inventoryId);
+      loadUsersForInventory(inventoryId); // Adicione esta linha
     } catch (error) {
       console.error("Erro ao remover usuário:", error);
       ui.showModal("Falha ao remover o usuário.");
@@ -397,7 +536,7 @@ export function handleRemoveUser(userId, userEmail) {
 export function populateInventorySelect(selectId, requiredOption = false) {
     const inventorySelect = document.getElementById(selectId);
     if (!inventorySelect) return;
-    inventorySelect.innerHTML = requiredOption ? '<option value="">Selecione uma despensa...</option>' : '<option value="all">Todas as despensas</option>';
+    inventorySelect.innerHTML = requiredOption ? '<option value="">Selecione uma despensa...</option>' : '<option value="all">Todas as Despensas</option>';
     state.inventoriesCache.forEach((inv) => {
         const option = document.createElement("option");
         option.value = inv.id;
@@ -414,7 +553,7 @@ export function loadInventories() {
       if (currentListDiv) {
         currentListDiv.innerHTML = "";
         if (state.inventoriesCache.length === 0) {
-            currentListDiv.innerHTML = `
+          currentListDiv.innerHTML = `
             <div class="empty-state">
               <p>Você ainda não tem nenhuma despensa.</p>
               <button id="create-first-inventory-btn" class="small-button">Criar minha primeira despensa</button>
@@ -461,6 +600,7 @@ export function viewInventoryProducts(inventoryId, inventoryName) {
                         <th>Quantidade</th>
                         <th>Valor Unit.</th>
                         <th>Valor Total</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody id="product-list-view"></tbody>
@@ -480,7 +620,9 @@ export function viewInventoryProducts(inventoryId, inventoryName) {
     products.forEach(product => {
       const row = document.createElement("tr");
       const totalValue = (product.quantity || 0) * (product.value || 0);
+      
       const isOutOfStock = product.quantity <= 0;
+
       row.className = "product-item";
       row.dataset.id = product.id;
       row.dataset.name = product.name;
@@ -518,7 +660,7 @@ export function viewInventoryProducts(inventoryId, inventoryName) {
   });
 }
 
-export function loadReport(inventoryId, month, year) {
+export async function loadReport(inventoryId, month, year) {
     state.clearActiveListeners();
     const reportBody = document.getElementById("report-list-body");
 
@@ -563,11 +705,11 @@ export function loadReport(inventoryId, month, year) {
         if (snapshot.empty) {
             reportBody.innerHTML = '<tr><td colspan="5">Nenhuma movimentação para exibir com os filtros atuais.</td></tr>';
         } else {
-            for (const doc of snapshot.docs) {
+            const promises = snapshot.docs.map(async (doc) => {
                 const move = doc.data();
-                
                 let userName = move.userName;
-                if (!userName) {
+
+                if (!userName && move.userId) {
                     if (userCache[move.userId]) {
                         userName = userCache[move.userId];
                     } else {
@@ -579,8 +721,16 @@ export function loadReport(inventoryId, month, year) {
                             userName = 'Usuário Desconhecido';
                         }
                     }
+                } else if (!userName) {
+                    userName = 'N/A';
                 }
 
+                return { ...move, userName };
+            });
+
+            const movesWithUsers = await Promise.all(promises);
+
+            movesWithUsers.forEach(move => {
                 const date = move.timestamp ? move.timestamp.toDate().toLocaleString("pt-BR") : "N/A";
                 const typeClass = move.type.toLowerCase().replace('ç', 'c').replace('ã', 'a');
                 const row = document.createElement("tr");
@@ -589,138 +739,66 @@ export function loadReport(inventoryId, month, year) {
                     <td>${move.productName}</td>
                     <td><span class="badge badge-${typeClass}">${move.type}</span></td>
                     <td>${move.details}</td>
-                    <td>${userName}</td>`;
+                    <td>${move.userName}</td>`;
                 reportBody.appendChild(row);
-                reportData.push([date, move.productName, move.type, move.details, userName]);
-            }
+                reportData.push([date, move.productName, move.type, move.details, move.userName]);
+            });
         }
         state.setLastReportData(reportData);
     }, (error) => { ui.showModal("Erro ao carregar relatório."); console.error(error); });
     
     state.addActiveListener(movementsListener);
 }
+export async function loadUsersForInventory(inventoryId) {
+    const userListDiv = document.getElementById('user-list');
+    if (!userListDiv) return;
 
-export function loadUsersForInventory(inventoryId) {
-  state.clearActiveListeners();
+    userListDiv.innerHTML = '<p>Carregando usuários...</p>';
 
-  const listener = db.collection("inventories").doc(inventoryId).onSnapshot(async (doc) => {
-      const userListDiv = document.getElementById("user-list");
-      if (!userListDiv) return;
-      const inventory = doc.data();
-      if (!inventory) {
-          userListDiv.innerHTML = "<p>Despensa não encontrada.</p>";
-          return;
-      }
-      const memberPromises = inventory.members.map((uid) => db.collection("users").doc(uid).get());
-      const memberDocs = await Promise.all(memberPromises);
-      userListDiv.innerHTML = "";
-      memberDocs.forEach((memberDoc) => {
-        if (memberDoc.exists) {
-          const user = memberDoc.data();
-          const item = document.createElement("div");
-          item.className = "user-item";
-          item.dataset.uid = memberDoc.id;
-          item.dataset.email = user.email;
-          const displayName = user.name || user.email;
-          const isOwner = inventory.ownerId === memberDoc.id;
-          let removeButton = "";
-          if (!isOwner && inventory.ownerId === state.currentUser.uid) {
-            removeButton = `<button class="action-button delete-button remove-user-button">Remover</button>`;
-          }
-          item.innerHTML = `<div><span class="user-email">${displayName}</span><br><span class="user-role">${isOwner ? "👑 Dono" : "Membro"}</span></div>${removeButton}`;
-          userListDiv.appendChild(item);
+    try {
+        const inventoryRef = db.collection("inventories").doc(inventoryId);
+        const inventoryDoc = await inventoryRef.get();
+
+        if (!inventoryDoc.exists) {
+            userListDiv.innerHTML = '<p>Despensa não encontrada.</p>';
+            return;
         }
-      });
-  });
-  state.addActiveListener(listener);
-}
 
-export async function checkLowStockAndRender() {
-    const alertContainer = document.getElementById("low-stock-alert-container");
-    if (!alertContainer) return;
+        const inventoryData = inventoryDoc.data();
+        const members = inventoryData.members || [];
+        const ownerId = inventoryData.ownerId;
 
-    let lowStockProducts = [];
+        if (members.length === 0) {
+            userListDiv.innerHTML = '<p>Nenhum usuário nesta despensa.</p>';
+            return;
+        }
 
-    for (const inventory of state.inventoriesCache) {
-        const productsRef = db.collection("inventories").doc(inventory.id).collection("products");
-        const snapshot = await productsRef.where("minQuantity", ">", 0).get();
+        const userPromises = members.map(userId => db.collection('users').doc(userId).get());
+        const userDocs = await Promise.all(userPromises);
 
-        snapshot.forEach(doc => {
-            const product = doc.data();
-            if (product.quantity <= product.minQuantity) {
-                lowStockProducts.push({
-                    ...product,
-                    id: doc.id,
-                    inventoryName: inventory.name,
-                    inventoryId: inventory.id
-                });
+        let usersHtml = '';
+        userDocs.forEach(doc => {
+            if (doc.exists) {
+                const user = doc.data();
+                const isOwner = user.uid === ownerId;
+                usersHtml += `
+                    <div class="user-item" data-uid="${user.uid}" data-email="${user.email}">
+                        <div class="user-details">
+                            <span class="user-email">${user.name || user.email}</span>
+                            ${isOwner ? '<span class="user-role">(Dono)</span>' : ''}
+                        </div>
+                        <div class="user-actions">
+                            ${!isOwner ? `<button class="action-button delete-button remove-user-button" data-uid="${user.uid}" data-email="${user.email}">Remover</button>` : ''}
+                        </div>
+                    </div>
+                `;
             }
         });
+
+        userListDiv.innerHTML = usersHtml;
+
+    } catch (error) {
+        console.error("Erro ao carregar usuários da despensa:", error);
+        userListDiv.innerHTML = '<p>Ocorreu um erro ao carregar os usuários.</p>';
     }
-
-    if (lowStockProducts.length > 0) {
-        let itemsHtml = lowStockProducts.map(p => `
-            <div class="low-stock-item">
-                <div class="low-stock-details">
-                    <span class="product-name">${p.name}</span>
-                    <span class="inventory-context">em ${p.inventoryName}</span>
-                </div>
-                <div class="low-stock-quantity">
-                    <span>${p.quantity} / ${p.minQuantity}</span>
-                </div>
-            </div>
-        `).join('');
-
-        alertContainer.innerHTML = `
-            <div class="card low-stock-alert">
-                <h3>⚠️ Alerta de Despensa Baixa</h3>
-                <div id="low-stock-list">
-                    ${itemsHtml}
-                </div>
-            </div>`;
-    } else {
-        alertContainer.innerHTML = "";
-    }
-}
-
-export function renderGlobalSummary() {
-    const totalQuantitySpan = document.getElementById("global-total-quantity");
-    const totalValueSpan = document.getElementById("global-total-value");
-    if (!totalQuantitySpan || !totalValueSpan) return;
-
-    const userInventories = state.inventoriesCache.map(inv => inv.id);
-    if (userInventories.length === 0) {
-        totalQuantitySpan.textContent = "0";
-        totalValueSpan.textContent = "R$ 0,00";
-        return;
-    }
-
-    let inventoryTotals = {};
-
-    const updateTotalSummary = () => {
-        let grandTotalQuantity = 0;
-        let grandTotalValue = 0;
-        for (const id in inventoryTotals) {
-            grandTotalQuantity += inventoryTotals[id].quantity;
-            grandTotalValue += inventoryTotals[id].value;
-        }
-        totalQuantitySpan.textContent = grandTotalQuantity;
-        totalValueSpan.textContent = `R$ ${grandTotalValue.toFixed(2).replace('.', ',')}`;
-    };
-
-    userInventories.forEach(id => {
-        const productsQuery = db.collection("inventories").doc(id).collection("products");
-        const listener = productsQuery.onSnapshot(snapshot => {
-            let currentInventoryQuantity = 0;
-            let currentInventoryValue = 0;
-            snapshot.forEach(doc => {
-                const product = doc.data();
-                currentInventoryQuantity += product.quantity || 0;
-                currentInventoryValue += (product.quantity || 0) * (product.value || 0);
-            });
-            inventoryTotals[id] = { quantity: currentInventoryQuantity, value: currentInventoryValue };
-            updateTotalSummary();
-        });
-        state.addActiveListener(listener);
-    });
 }

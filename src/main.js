@@ -28,28 +28,40 @@ function createWindow() {
 
   mainWindow.setMenuBarVisibility(false);
   mainWindow.loadFile(path.join(__dirname, "pages/login.html"));
+  //mainWindow.webContents.openDevTools(); 
 }
 
+// --- Lógica do Auto-Updater ---
+
+// Configurar o logger do autoUpdater
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = "info";
 
-// Removemos a notificação automática e ouvimos o evento 'update-downloaded'
+// 1. Ouvir o evento que indica que a atualização foi descarregada
 autoUpdater.on('update-downloaded', () => {
   log.info('Update downloaded; notifying renderer process.');
-  // Envia uma mensagem para a janela principal quando o download estiver completo
-  mainWindow.webContents.send('update_downloaded');
+  // Envia uma mensagem para a janela da aplicação (o nosso home.js)
+  // para que ela possa mostrar o modal personalizado.
+  if (mainWindow) {
+    mainWindow.webContents.send('update_downloaded');
+  }
 });
 
-// Ouve o evento do renderer para reiniciar e instalar
+// 2. Ouvir o pedido da janela da aplicação para reiniciar e instalar
 ipcMain.on('restart_app', () => {
   log.info('Restarting app to install update.');
   autoUpdater.quitAndInstall();
 });
 
+
+// --- Ciclo de Vida da Aplicação ---
+
 app.whenReady().then(() => {
   createWindow();
+
+  // 3. Após a janela ser criada, verificamos se há atualizações
+  // Isto só é executado na aplicação instalada (não em desenvolvimento)
   if (app.isPackaged) {
-    // Apenas verifica, não notifica mais automaticamente
     autoUpdater.checkForUpdates();
   }
 });

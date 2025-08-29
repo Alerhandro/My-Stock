@@ -1,3 +1,7 @@
+// home.js
+// Ponto de entrada principal para a lógica da página home.
+// Orquestra os módulos e lida com os eventos principais.
+
 import * as ui from './modules/ui.js';
 import * as firestore from './modules/firestore.js';
 import * as pages from './modules/pages.js';
@@ -33,7 +37,7 @@ async function initializeApp() {
         const updateLaterBtn = document.getElementById('update-later-button');
 
         updateNowBtn.onclick = () => api.restartApp();
-        updateLaterBtn.onclick = () => updateModal.style.display = 'none';
+        updateLaterBtn.onclick = () => ui.closeModal(updateModal);
 
         updateModal.style.display = 'flex';
     });
@@ -68,8 +72,12 @@ ui.contentArea.addEventListener("click", (e) => {
   
   if (e.target.matches("#generate-pdf-btn")) { 
     const { jsPDF } = window.jspdf;
-    firestore.generatePdf(jsPDF); 
+    firestore.generatePdfReport(jsPDF); 
   }
+   if (e.target.matches("#print-shopping-list-btn")) {
+     const { jsPDF } = window.jspdf;
+     firestore.generatePdfShoppingList(jsPDF);
+   }
 
   if (e.target.matches("#create-first-inventory-btn")) {
     const inventoryNameInput = document.getElementById('inventory-name');
@@ -126,7 +134,11 @@ ui.contentArea.addEventListener("change", (e) => {
     if (e.target.id === "user-inventory-select") {
         const selectedId = e.target.value;
         document.getElementById("user-management-content").style.display = selectedId ? "block" : "none";
-        if (selectedId) firestore.loadUsersForInventory(selectedId);
+        if (selectedId) {
+            firestore.loadUsersForInventory(selectedId); // Adicione esta linha
+        } else {
+            document.getElementById('user-list').innerHTML = '<p>Selecione uma despensa para ver os membros.</p>'; // Limpa a lista se nenhuma despensa for selecionada
+        }
     }
 });
 

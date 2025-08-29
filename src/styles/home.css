@@ -471,28 +471,6 @@ h3 {
     color: var(--cor-erro);
 }
 
-#report-summary {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    text-align: center;
-    border-left: 4px solid var(--cor-primaria);
-}
-
-#report-summary p {
-    margin: 0;
-    font-size: 16px;
-    color: var(--texto-secundario);
-}
-
-#report-summary span {
-    display: block;
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--texto-principal);
-    margin-top: 5px;
-}
-
 .badge {
     padding: 4px 10px;
     border-radius: 12px;
@@ -522,7 +500,6 @@ h3 {
 
 #search-products {
     padding-left: 40px;
-    /* Espaço para o ícone */
     font-size: 16px;
     width: 100%;
 }
@@ -556,18 +533,6 @@ h3 {
     background-color: color-mix(in srgb, var(--cor-destaque) 85%, #000);
 }
 
-.extra-links {
-    margin-top: -15px;
-    margin-bottom: 20px;
-    text-align: right;
-    font-size: 13px;
-}
-
-.reset-info {
-    margin-bottom: 20px;
-    line-height: 1.5;
-}
-
 .consume-button {
     background-color: var(--cor-destaque);
 }
@@ -578,6 +543,10 @@ h3 {
 
 #home-summary-card {
     border-left: 4px solid var(--cor-primaria);
+}
+
+#shopping-list-card {
+    border-left: 4px solid var(--cor-destaque);
 }
 
 .summary-grid {
@@ -615,16 +584,16 @@ h3 {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(244, 247, 250, 0.7); /* Cor do fundo principal com transparência */
+    background-color: rgba(244, 247, 250, 0.7);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    display: none; /* Começa escondido */
+    display: none;
 }
 
 body.dark-theme #global-spinner {
-    background-color: rgba(15, 23, 42, 0.7); /* Cor de fundo escura com transparência */
+    background-color: rgba(15, 23, 42, 0.7);
 }
 
 .spinner {
@@ -645,8 +614,8 @@ body.dark-theme #global-spinner {
 .label-with-tooltip {
   display: flex;
   align-items: center;
-  gap: 8px; /* Espaçamento entre o label e o ícone */
-  margin-bottom: 5px; /* Espaçamento padrão do label */
+  gap: 8px;
+  margin-bottom: 5px;
 }
 
 .tooltip-container {
@@ -678,9 +647,9 @@ body.dark-theme #global-spinner {
   padding: 8px;
   position: absolute;
   z-index: 1;
-  bottom: 125%; /* Posição acima do ícone */
+  bottom: 125%;
   left: 50%;
-  margin-left: -110px; /* Metade da largura para centralizar */
+  margin-left: -110px;
   opacity: 0;
   transition: opacity 0.3s;
   font-size: 13px;
@@ -737,6 +706,7 @@ body.dark-theme #global-spinner {
   padding: 10px 20px;
 }
 
+/* --- ESTILOS PARA MODAL DE UPDATE --- */
 #update-now-button {
     width: 150px;
     background-color: var(--cor-sucesso);
@@ -753,4 +723,35 @@ body.dark-theme #global-spinner {
 }
 #update-later-button:hover {
     background: var(--fundo-principal);
+}
+
+/* --- ESTILOS LISTA DE COMPRAS --- */
+#shopping-list-container {
+    list-style-type: none;
+    padding: 0;
+}
+.shopping-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--cor-borda);
+}
+.shopping-list-item:last-child {
+    border-bottom: none;
+}
+.shopping-list-item-name {
+    font-weight: 500;
+}
+.shopping-list-item-details {
+    font-size: 0.9em;
+    color: var(--texto-secundario);
+}
+
+#print-shopping-list-btn {
+    background-color: var(--cor-destaque);
+}
+
+#print-shopping-list-btn {
+    background-color: color-mix(in srgb, var(--cor-destaque) 85%, #000);
 }
