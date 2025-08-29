@@ -726,32 +726,59 @@ body.dark-theme #global-spinner {
 }
 
 /* --- ESTILOS LISTA DE COMPRAS --- */
-#shopping-list-container {
+#shopping-list-page-container {
     list-style-type: none;
     padding: 0;
 }
+
 .shopping-list-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 0;
+    padding: 15px; /* Aumentado para mais espaçamento */
     border-bottom: 1px solid var(--cor-borda);
+    background-color: var(--fundo-secundario); /* Adiciona um fundo para cada item */
+    border-radius: 8px; /* Cantos arredondados */
+    margin-bottom: 10px; /* Espaçamento entre os itens */
+    transition: background-color 0.2s, box-shadow 0.2s;
 }
+
 .shopping-list-item:last-child {
     border-bottom: none;
 }
+
+.shopping-list-item:hover {
+    background-color: color-mix(in srgb, var(--cor-primaria) 10%, transparent); /* Efeito hover sutil */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Sombra suave no hover */
+}
+
+.shopping-list-item-details {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Espaçamento entre ícone e texto */
+}
+
 .shopping-list-item-name {
     font-weight: 500;
+    font-size: 1.1em; /* Fonte um pouco maior para o nome */
 }
-.shopping-list-item-details {
+
+.shopping-list-item-info {
     font-size: 0.9em;
     color: var(--texto-secundario);
+    text-align: right;
+}
+
+.shopping-list-item-icon {
+    font-size: 24px;
+    margin-right: 15px; /* Espaço à direita do ícone */
+    color: var(--cor-primaria);
 }
 
 #print-shopping-list-btn {
     background-color: var(--cor-destaque);
 }
 
-#print-shopping-list-btn {
+#print-shopping-list-btn:hover {
     background-color: color-mix(in srgb, var(--cor-destaque) 85%, #000);
 }
