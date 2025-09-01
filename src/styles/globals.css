@@ -56,6 +56,7 @@ body.sunset-theme {
     --cor-borda: #44403c;
 }
 
+/* TEMA CENOURA CLARO */
 body.carrot-light-theme {
     --fundo-principal: #fff7ed;       
     --fundo-secundario: #ffffff;     
@@ -81,7 +82,7 @@ body.pastel-dark-theme {
     --cor-borda: #5a6578;
 }
 
-/* TEMA ROXO LAVANDA */
+/* TEMA LAVANDA */
 body.purple-lavender-theme {
     --fundo-principal: #f5f3ff;       
     --fundo-secundario: #ffffff;     
@@ -94,7 +95,7 @@ body.purple-lavender-theme {
     --cor-borda: #e0e7ff;            
 }
 
-/* TEMA NÉVOA DE AMETISTA */
+/* TEMA AMETISTA */
 body.purple-amethyst-theme {
     --fundo-principal: #1e1b4b;      
     --fundo-secundario: #312e81;      

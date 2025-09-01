@@ -1,13 +1,8 @@
-// firestore.js
-// Lida com todas as interações com o banco de dados Firebase Firestore.
-
 import * as ui from './ui.js';
 import * as state from './state.js';
 import { loadPage } from './pages.js';
 
 const db = firebase.firestore();
-
-// --- INÍCIO DA CORREÇÃO ---
 
 /**
  * Renderiza o resumo global no painel (Dashboard).
@@ -69,8 +64,6 @@ export function renderGlobalSummary() {
         state.addActiveListener(productsListener);
     });
 }
-
-// --- FIM DA CORREÇÃO ---
 
 function renderShoppingList(container, lowStockProducts) {
     if (!container) return;

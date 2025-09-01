@@ -1,6 +1,3 @@
-// state.js
-// Armazena e exporta as variáveis de estado globais da aplicação.
-
 export let currentUser = null;
 export let inventoriesCache = [];
 export let activeInventoryId = null;

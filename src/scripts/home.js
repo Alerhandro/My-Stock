@@ -1,7 +1,3 @@
-// home.js
-// Ponto de entrada principal para a lógica da página home.
-// Orquestra os módulos e lida com os eventos principais.
-
 import * as ui from './modules/ui.js';
 import * as firestore from './modules/firestore.js';
 import * as pages from './modules/pages.js';

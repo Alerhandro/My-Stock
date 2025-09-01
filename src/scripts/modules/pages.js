@@ -1,23 +1,19 @@
-// pages.js
-// Gerencia o carregamento de páginas, templates HTML e funções de inicialização.
-
-import * as ui from './ui.js';
-import * as firestore from './firestore.js';
-import * as state from './state.js'; 
-import { clearActiveListeners } from './state.js';
+import * as ui from "./ui.js";
+import * as firestore from "./firestore.js";
+import * as state from "./state.js";
+import { clearActiveListeners } from "./state.js";
 
 const pageTitles = {
-    inicio: "Dashboard",
-    estoque: "Gerenciar Despensas",
-    "lista-de-compras": "Lista de Compras",
-    relatorio: "Relatórios",
-    usuarios: "Gerenciar Usuários",
-    configuracoes: "Configurações",
-    ajuda: "Ajuda e FAQ",
+  inicio: "Dashboard",
+  estoque: "Gerenciar Despensas",
+  "lista-de-compras": "Lista de Compras",
+  relatorio: "Relatórios",
+  usuarios: "Gerenciar Usuários",
+  configuracoes: "Configurações",
+  ajuda: "Ajuda e FAQ",
 };
 
 const templates = {
-  // --- INÍCIO DA CORREÇÃO ---
   inicio: `
         <div id="low-stock-alert-container"></div>
         
@@ -42,7 +38,6 @@ const templates = {
             </div>
         </div>
     `,
-  // --- FIM DA CORREÇÃO ---
   estoque: `
         <div class="card">
             <h3>Criar Nova Despensa</h3>
@@ -156,26 +151,46 @@ const templates = {
             </div>
         </div>
     `,
-    ajuda: `
-    <div class="card">
-      <h3>Perguntas Frequentes (FAQ)</h3>
+  ajuda: `
+<div class="card">
+  <h3>Perguntas Frequentes (FAQ)</h3>
 
-      <div class="faq-item">
-        <h4>Como convido um amigo para a minha Despensa?</h4>
-        <p>Vá para a seção "Usuários", selecione a despensa desejada na lista, digite o e-mail do seu amigo no campo "Convidar Novo Usuário" e clique em "Convidar". O utilizador precisa de já ter uma conta registada na aplicação.</p>
-      </div>
+  <div class="faq-item">
+    <h4>Como eu crio uma nova despensa?</h4>
+    <p>Vá para a seção "Minhas Despensas" no menu lateral. No topo da página, encontrará um campo para inserir o nome da sua nova despensa. Digite o nome desejado e clique no botão "Criar Despensa".</p>
+  </div>
 
-      <div class="faq-item">
-        <h4>Como gero um relatório em PDF?</h4>
-        <p>Vá para a seção "Relatório", use os filtros para selecionar a despensa, o mês e o ano que deseja analisar. As movimentações aparecerão na tabela abaixo. Em seguida, clique no botão "Gerar PDF" para descarregar o ficheiro.</p>
-      </div>
+  <div class="faq-item">
+    <h4>Como eu posso renomear ou apagar uma despensa?</h4>
+    <p>Na seção "Minhas Despensas", passe o cursor por cima da despensa que deseja alterar. Irão aparecer os botões "Renomear" e "Apagar". Lembre-se que apenas o proprietário da despensa pode realizar estas ações.</p>
+  </div>
 
-      <div class="faq-item">
-        <h4>Para que serve a "Quantidade Mínima para Alerta"?</h4>
-        <p>Este valor define um limite de quantidade. Quando a quantidade de um produto for igual ou inferior a este número, um aviso de "Despensa Baixa" será exibido de forma destacada na página "Início", ajudando-o a saber quando precisa de repor os seus itens.</p>
-      </div>
-    </div>
-  `,
+  <div class="faq-item">
+    <h4>Como convido um amigo para a minha despensa?</h4>
+    <p>Vá para a seção "Usuários", selecione a despensa desejada na lista, digite o e-mail do seu amigo no campo "Convidar Novo Usuário" e clique em "Convidar". O utilizador precisa de já ter uma conta registada na aplicação.</p>
+  </div>
+
+  <div class="faq-item">
+    <h4>Como funciona o "Valor Total da Despensa" no Dashboard?</h4>
+    <p>O valor total é calculado multiplicando a quantidade de cada item pelo seu valor unitário e somando todos os resultados. Certifique-se de que os valores dos seus produtos estão atualizados para ter uma estimativa precisa.</p>
+  </div>
+
+  <div class="faq-item">
+    <h4>Para que serve a "Quantidade Mínima para Alerta"?</h4>
+    <p>Este valor define um limite de estoque. Quando a quantidade de um produto for igual ou inferior a este número, um aviso de "Despensa Baixa" será exibido de forma destacada na página "Início" e o item aparecerá na "Lista de Compras", ajudando-o a saber quando precisa de repor os seus itens.</p>
+  </div>
+
+  <div class="faq-item">
+    <h4>Como gero um relatório em PDF?</h4>
+    <p>Vá para a seção "Relatórios", use os filtros para selecionar a despensa (ou todas), o mês e o ano que deseja analisar. As movimentações aparecerão na tabela abaixo. Em seguida, clique no botão "Gerar PDF" para descarregar o ficheiro.</p>
+  </div>
+
+  <div class="faq-item">
+    <h4>Como posso alterar o tema do aplicativo?</h4>
+    <p>Na seção "Configurações", clique no botão "Alterar Tema". Uma janela com as opções de cores disponíveis irá aparecer. Basta selecionar a sua preferida e a alteração será aplicada instantaneamente.</p>
+  </div>
+</div>
+`,
 };
 
 export function loadPage(page) {
@@ -189,7 +204,7 @@ export function loadPage(page) {
 
   if (page === "inicio") initInicioPage();
   if (page === "estoque") initEstoquePage();
-  if (page === "lista-de-compras") initShoppingListPage(); 
+  if (page === "lista-de-compras") initShoppingListPage();
   if (page === "relatorio") initRelatorioPage();
   if (page === "usuarios") initUsuariosPage();
   if (page === "configuracoes") initConfiguracoesPage();
@@ -198,34 +213,34 @@ export function loadPage(page) {
 // --- Funções de Inicialização de Página ---
 
 function initInicioPage() {
-    firestore.checkLowStockAndRender();
-    firestore.renderGlobalSummary();
+  firestore.checkLowStockAndRender();
+  firestore.renderGlobalSummary();
 }
 
 function initEstoquePage() {
-    firestore.loadInventories();
+  firestore.loadInventories();
 }
 
 function initConfiguracoesPage() {
-    const nameInput = document.getElementById("new-display-name");
-    if (nameInput && state.currentUser && state.currentUser.displayName) {
-        nameInput.value = state.currentUser.displayName;
-    }
+  const nameInput = document.getElementById("new-display-name");
+  if (nameInput && state.currentUser && state.currentUser.displayName) {
+    nameInput.value = state.currentUser.displayName;
+  }
 }
 
 function initRelatorioPage() {
-    firestore.populateInventorySelect("report-inventory-select");
-    const yearInput = document.getElementById('report-year-select');
-    yearInput.value = new Date().getFullYear();
-    const inventoryId = document.getElementById('report-inventory-select').value;
-    const month = document.getElementById('report-month-select').value;
-    firestore.loadReport(inventoryId, month, yearInput.value);
+  firestore.populateInventorySelect("report-inventory-select");
+  const yearInput = document.getElementById("report-year-select");
+  yearInput.value = new Date().getFullYear();
+  const inventoryId = document.getElementById("report-inventory-select").value;
+  const month = document.getElementById("report-month-select").value;
+  firestore.loadReport(inventoryId, month, yearInput.value);
 }
 
 function initUsuariosPage() {
-    firestore.populateInventorySelect("user-inventory-select", true);
+  firestore.populateInventorySelect("user-inventory-select", true);
 }
 
-function initShoppingListPage() { 
-    firestore.renderShoppingListPage();
+function initShoppingListPage() {
+  firestore.renderShoppingListPage();
 }

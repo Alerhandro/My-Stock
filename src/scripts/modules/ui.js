@@ -1,6 +1,3 @@
-// ui.js
-// Contém todas as funções relacionadas à manipulação da interface do utilizador (UI).
-
 import { setConfirmCallback } from './state.js';
 
 // --- Seletores de Elementos Globais ---
