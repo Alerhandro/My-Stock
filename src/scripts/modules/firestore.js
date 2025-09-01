@@ -347,7 +347,7 @@ export async function handleConsumeProduct(productId, productName) {
             const currentQuantity = productDoc.data().quantity;
             if (currentQuantity <= 0) {
                 ui.showToast(`"${productName}" já está com o estoque zerado.`, "error");
-                return; 
+                return;
             }
 
             transaction.update(productRef, {
@@ -358,13 +358,22 @@ export async function handleConsumeProduct(productId, productName) {
         const inventoryDoc = await db.collection("inventories").doc(state.activeInventoryId).get();
         const inventoryName = inventoryDoc.data().name;
         logMovement(state.activeInventoryId, inventoryName, productName, "Ajuste", "Consumido 1 unidade");
+
+        // --- Feedback Visual ---
+        const productRow = document.querySelector(`.product-item[data-id="${productId}"]`);
+        if (productRow) {
+            productRow.classList.add('updated');
+            setTimeout(() => {
+                productRow.classList.remove('updated');
+            }, 1500); // Remove a classe após a animação terminar (1.5s)
+        }
+        
         
     } catch (error) {
         console.error("Erro ao consumir produto:", error);
         ui.showModal("Não foi possível consumir o item.");
     }
 }
-
 
 export function openEditModal(productId, currentName, currentQuantity, currentValue) {
   document.getElementById('edit-product-id').value = productId;
@@ -378,6 +387,7 @@ export function openEditModal(productId, currentName, currentQuantity, currentVa
       }
   });
   ui.editModal.style.display = 'flex';
+  ui.focusFirstInput(ui.editModal); // --- MODIFICAÇÃO AQUI ---
 }
 
 export async function handleUpdateProduct(form) {
@@ -590,10 +600,24 @@ export function viewInventoryProducts(inventoryId, inventoryName) {
             <h3>Produtos na despensa "${inventoryName}"</h3>
             <button id="add-product-in-view-btn" class="small-button">+ Adicionar Novo</button>
         </div>
-        <div class="search-container">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="search-products" placeholder="Pesquisar por nome do produto...">
+
+        <div class="product-controls">
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search-products" placeholder="Pesquisar por nome do produto...">
+            </div>
+            <div class="sort-container">
+                <label for="sort-select">Ordenar por:</label>
+                <select id="sort-select">
+                    <option value="default">Padrão (Mais Recente)</option>
+                    <option value="name-asc">Nome (A-Z)</option>
+                    <option value="name-desc">Nome (Z-A)</option>
+                    <option value="quantity-asc">Quantidade (Menor > Maior)</option>
+                    <option value="quantity-desc">Quantidade (Maior > Menor)</option>
+                </select>
+            </div>
         </div>
+        
         <div id="product-list-container">
             <table class="product-table">
                 <thead>
@@ -612,6 +636,9 @@ export function viewInventoryProducts(inventoryId, inventoryName) {
 
   const productListView = document.getElementById("product-list-view");
   const searchInput = document.getElementById("search-products");
+  const sortSelect = document.getElementById("sort-select");
+
+  let allProducts = [];
 
   const renderProducts = (products) => {
     productListView.innerHTML = "";
@@ -626,6 +653,11 @@ export function viewInventoryProducts(inventoryId, inventoryName) {
       const isOutOfStock = product.quantity <= 0;
 
       row.className = "product-item";
+      // Adicionando uma classe para itens com baixo estoque para estilização opcional
+      if (product.minQuantity > 0 && product.quantity <= product.minQuantity) {
+        row.classList.add('low-stock-row'); 
+      }
+
       row.dataset.id = product.id;
       row.dataset.name = product.name;
       row.dataset.quantity = product.quantity;
@@ -645,21 +677,42 @@ export function viewInventoryProducts(inventoryId, inventoryName) {
       productListView.appendChild(row);
     });
   };
+  
+  // Função para aplicar filtros e ordenação
+  const applyFiltersAndSort = () => {
+    let filteredProducts = [...allProducts];
 
-  let allProducts = [];
+    // Aplicar filtro de pesquisa
+    const searchTerm = searchInput.value.toLowerCase();
+    if (searchTerm) {
+        filteredProducts = filteredProducts.filter(p => p.name.toLowerCase().includes(searchTerm));
+    }
+
+    // Aplicar ordenação
+    const sortValue = sortSelect.value;
+    if (sortValue === 'name-asc') {
+        filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortValue === 'name-desc') {
+        filteredProducts.sort((a, b) => b.name.localeCompare(a.name));
+    } else if (sortValue === 'quantity-asc') {
+        filteredProducts.sort((a, b) => a.quantity - b.quantity);
+    } else if (sortValue === 'quantity-desc') {
+        filteredProducts.sort((a, b) => b.quantity - a.quantity);
+    }
+    // "default" já está ordenado por data de criação vindo do Firebase.
+
+    renderProducts(filteredProducts);
+  };
+
   const productsListener = db.collection("inventories").doc(inventoryId).collection("products").orderBy("createdAt", "desc")
     .onSnapshot((snapshot) => {
       allProducts = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-      renderProducts(allProducts);
-      searchInput.value = '';
+      applyFiltersAndSort(); // Renderiza com os filtros e ordenação atuais
     });
   state.addActiveListener(productsListener);
 
-  searchInput.addEventListener('input', (e) => {
-    const searchTerm = e.target.value.toLowerCase();
-    const filteredProducts = allProducts.filter(p => p.name.toLowerCase().includes(searchTerm));
-    renderProducts(filteredProducts);
-  });
+  searchInput.addEventListener('input', applyFiltersAndSort);
+  sortSelect.addEventListener('change', applyFiltersAndSort);
 }
 
 export async function loadReport(inventoryId, month, year) {

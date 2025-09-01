@@ -782,3 +782,47 @@ body.dark-theme #global-spinner {
 #print-shopping-list-btn:hover {
     background-color: color-mix(in srgb, var(--cor-destaque) 85%, #000);
 }
+
+@keyframes highlight-update {
+    from { background-color: rgba(249, 115, 22, 0.3); }
+    to { background-color: transparent; }
+}
+
+.product-item.updated {
+    animation: highlight-update 1.5s ease-out;
+}
+.product-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap; /* Permite que os itens quebrem para a linha de baixo em telas pequenas */
+}
+
+/* Ajuste no search-container que já existe para funcionar bem no flexbox */
+.search-container {
+    flex-grow: 1; /* Ocupa o espaço disponível */
+    min-width: 250px; /* Largura mínima para evitar que fique muito pequeno */
+}
+
+.sort-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#sort-select {
+    padding: 10px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 8px;
+    background-color: var(--fundo-principal);
+    color: var(--texto-principal);
+    font-size: 14px;
+    min-width: 200px;
+}
+
+/* Ajustes para remover a margem do campo de pesquisa quando está dentro dos controlos */
+.product-controls .search-container {
+    margin-bottom: 0;
+}

@@ -81,3 +81,13 @@ export function openThemeModal() {
   };
   themeSelectModal.style.display = "flex";
 }
+
+export function focusFirstInput(modalElement) {
+  // Um pequeno atraso garante que o modal esteja totalmente visível antes de tentarmos focar.
+  setTimeout(() => {
+    const firstInput = modalElement.querySelector('input[type="text"], input[type="number"], input[type="email"], input[type="password"]');
+    if (firstInput) {
+      firstInput.focus();
+    }
+  }, 100);
+}

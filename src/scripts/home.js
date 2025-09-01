@@ -63,7 +63,10 @@ document.addEventListener('submit', (e) => {
 // Listener para cliques delegados na área de conteúdo
 ui.contentArea.addEventListener("click", (e) => {
   if (e.target.matches("#open-theme-modal-btn")) { ui.openThemeModal(); }
-  if (e.target.matches("#add-product-in-view-btn")) { ui.addProductModal.style.display = "flex"; }
+  if (e.target.matches("#add-product-in-view-btn")) { 
+    ui.addProductModal.style.display = "flex";
+    ui.focusFirstInput(ui.addProductModal);
+  }
   if (e.target.matches("#back-to-inventories")) { pages.loadPage("estoque"); }
   
   if (e.target.matches("#generate-pdf-btn")) { 
