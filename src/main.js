@@ -29,7 +29,7 @@ function createWindow() {
   mainWindow.setMenuBarVisibility(false);
   mainWindow.loadFile(path.join(__dirname, "pages/login.html"));
   /* REMOVA O // PARA ABRIR O DEBUG */ 
-  //mainWindow.webContents.openDevTools(); 
+  // mainWindow.webContents.openDevTools(); 
 }
 
 // --- Lógica do Auto-Updater ---

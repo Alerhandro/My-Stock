@@ -4,7 +4,7 @@ import * as state from "./state.js";
 import { clearActiveListeners } from "./state.js";
 
 const pageTitles = {
-  inicio: "Dashboard",
+  inicio: "Tela Inicial",
   estoque: "Gerenciar Despensas",
   "lista-de-compras": "Lista de Compras",
   relatorio: "Relatórios",
@@ -171,7 +171,7 @@ const templates = {
   </div>
 
   <div class="faq-item">
-    <h4>Como funciona o "Valor Total da Despensa" no Dashboard?</h4>
+    <h4>Como funciona o "Valor Total da Despensa" na Tela inicial?</h4>
     <p>O valor total é calculado multiplicando a quantidade de cada item pelo seu valor unitário e somando todos os resultados. Certifique-se de que os valores dos seus produtos estão atualizados para ter uma estimativa precisa.</p>
   </div>
 

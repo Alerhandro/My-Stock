@@ -3,7 +3,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #e86b76;
+  background-color: #ffffff;
 }
 #app-container {
   width: 400px;
@@ -11,8 +11,8 @@ body {
   padding: 40px;
   border-radius: 12px;
   box-shadow: var(--sombra);
-  border: 2px solid #df57af00;
-  background-color: #FFFFFF;
+  border: 2px solid #df57af;
+  background-color: #e86a741f;
 }
 .login-logo {
   display: block;
