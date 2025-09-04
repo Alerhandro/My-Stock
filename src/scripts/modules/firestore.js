@@ -464,6 +464,11 @@ export async function handleChangePassword(form) {
     const currentPassword = form.querySelector("#current-password").value;
     const newPassword = form.querySelector("#new-password").value;
 
+    if (currentPassword === newPassword) {
+        ui.showModal("A nova senha não pode ser igual à senha atual.");
+        return; // Impede que o resto da função seja executado
+    }
+
     try {
         const credential = firebase.auth.EmailAuthProvider.credential(state.currentUser.email, currentPassword);
         await state.currentUser.reauthenticateWithCredential(credential);
@@ -626,7 +631,6 @@ export function viewInventoryProducts(inventoryId, inventoryName) {
                         <th>Quantidade</th>
                         <th>Valor Unit.</th>
                         <th>Valor Total</th>
-                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody id="product-list-view"></tbody>
@@ -856,4 +860,33 @@ export async function loadUsersForInventory(inventoryId) {
         console.error("Erro ao carregar usuários da despensa:", error);
         userListDiv.innerHTML = '<p>Ocorreu um erro ao carregar os usuários.</p>';
     }
+}
+
+export function generatePdfReport(jsPDF) {
+  const doc = new jsPDF();
+  const today = new Date().toLocaleDateString("pt-BR");
+  const inventorySelect = document.getElementById('report-inventory-select');
+  const inventoryName = inventorySelect.options[inventorySelect.selectedIndex].text;
+  const monthSelect = document.getElementById('report-month-select');
+  const monthName = monthSelect.options[monthSelect.selectedIndex].text;
+  const year = document.getElementById('report-year-select').value || 'Todos';
+
+  doc.setFontSize(18);
+  doc.text("Relatório de Movimentações", 105, 20, { align: 'center' });
+  doc.setFontSize(11);
+  doc.text(`Despensa: ${inventoryName} | Período: ${monthName} de ${year}`, 105, 28, { align: 'center' });
+
+  if (state.lastReportData.length === 0) {
+    doc.text("Nenhuma movimentação para exibir com os filtros atuais.", 14, 45);
+  } else {
+    doc.autoTable({
+      startY: 40,
+      head: [['Data', 'Produto', 'Tipo', 'Detalhes', 'Usuário']],
+      body: state.lastReportData,
+      theme: 'striped',
+      headStyles: { fillColor: [30, 41, 59] }
+    });
+  }
+
+  doc.save(`Relatorio_Movimentacoes_${today.replace(/\//g, '-')}.pdf`);
 }
