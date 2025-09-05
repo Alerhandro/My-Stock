@@ -55,7 +55,7 @@ const templates = {
         <div class="card">
             <div class="card-header">
                 <h3>Itens com Estoque Baixo</h3>
-                <button id="print-shopping-list-btn" class="small-button">Imprimir Lista</button>
+                <button id="print-shopping-list-btn">Imprimir Lista</button>
             </div>
             <div id="shopping-list-page-container">
                  <p>Nenhum item com estoque baixo no momento.</p>

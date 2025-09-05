@@ -674,8 +674,8 @@ export function viewInventoryProducts(inventoryId, inventoryName) {
         <td>
           <div class="product-actions">
             <button class="action-button consume-button" ${isOutOfStock ? 'disabled' : ''}>Consumir</button> 
-            <button class="action-button edit-button">Editar</button>
-            <button class="action-button delete-button">Excluir</button>
+            <button class="action-button edit-button" aria-label="Editar Produto">Editar</button>
+            <button class="action-button delete-button" aria-label="Excluir Produto">Excluir</button>
           </div>
         </td>`;
       productListView.appendChild(row);

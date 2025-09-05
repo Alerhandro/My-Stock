@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
+/* ==========================================================================
+   CSS Variables (Temas)
+   ========================================================================== */
+
 /* TEMA CLARO (PADRÃO) */
 :root {
     --fundo-principal: #f4f7fa;
@@ -108,14 +112,39 @@ body.purple-amethyst-theme {
     --cor-borda: #4338ca;         
 }
 
+/* ==========================================================================
+   ESTILOS BASE E RESET
+   ========================================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: 'Roboto', sans-serif;
     background-color: var(--fundo-principal);
     color: var(--texto-principal);
     margin: 0;
-    box-sizing: border-box;
     -webkit-font-smoothing: antialiased;
     transition: background-color 0.3s, color 0.3s;
+}
+
+/* ==========================================================================
+   COMPONENTES GLOBAIS
+   ========================================================================== */
+
+/* --- Formulários --- */
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--texto-secundario);
 }
 
 input, select {
@@ -124,18 +153,18 @@ input, select {
     border: 1px solid var(--cor-borda);
     width: 100%;
     padding: 12px 15px;
-    margin-bottom: 15px;
     border-radius: 8px;
-    box-sizing: border-box;
     font-size: 16px;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
+
 input:focus, select:focus {
     outline: none;
     border-color: var(--cor-primaria);
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--cor-primaria) 20%, transparent);
 }
 
+/* --- Botões --- */
 button {
     width: 100%;
     padding: 12px;
@@ -147,8 +176,206 @@ button {
     font-size: 16px;
     font-weight: 500;
     transition: background-color 0.2s, transform 0.2s;
+    user-select: none; /* Previne seleção de texto ao clicar */
 }
-button:hover {
+
+button:hover:not(:disabled) {
     background-color: var(--cor-primaria-hover);
     transform: translateY(-1px);
+}
+
+button:active:not(:disabled) {
+    transform: translateY(0px); /* Efeito de clique */
+}
+
+button:disabled {
+    background-color: #94a3b8; 
+    cursor: not-allowed;
+    transform: none;
+    opacity: 0.6;
+}
+
+/* --- Cards --- */
+.card {
+    background-color: var(--fundo-secundario);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: var(--sombra);
+    border: 1px solid var(--cor-borda);
+    margin-bottom: 25px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--cor-borda);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.card-header h3 {
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* --- Modais --- */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: var(--fundo-secundario);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: var(--sombra);
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    position: relative;
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: var(--texto-secundario);
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-button:hover {
+    color: var(--texto-principal);
+}
+
+/* --- Toasts (Notificações) --- */
+#toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast {
+    padding: 15px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: slideIn 0.3s ease-out forwards;
+    opacity: 0;
+}
+
+.toast.hide {
+    animation: fadeOut 0.5s ease-in forwards;
+}
+
+.toast.toast-success {
+    background-color: var(--cor-sucesso);
+}
+
+.toast.toast-error {
+    background-color: var(--cor-erro);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+}
+
+/* --- Tooltips --- */
+.label-with-tooltip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tooltip-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: var(--texto-secundario);
+  color: var(--fundo-secundario);
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  width: 220px;
+  background-color: var(--fundo-sidebar);
+  color: var(--texto-sidebar);
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -110px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 13px;
+  font-weight: 400;
+  box-shadow: var(--sombra);
+}
+
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
 }

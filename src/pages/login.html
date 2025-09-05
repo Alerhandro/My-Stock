@@ -9,78 +9,103 @@
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
     <link rel="stylesheet" href="../styles/globals.css" />
     <link rel="stylesheet" href="../styles/login.css" />
   </head>
   <body>
-    <div id="app-container">
-      <img src="../assets/logof.png" alt="Logo" class="login-logo" />
+    <div class="login-container">
+      <div id="app-container">
+        <img src="../assets/logof.png" alt="Logo" class="login-logo" />
 
-      <div id="login-section">
-        <h2>Bem-vindo de volta!</h2>
-        <form id="login-form">
-          <input
-            type="email"
-            id="login-email"
-            placeholder="Seu e-mail"
-            required
-          />
-          <input
-            type="password"
-            id="login-password"
-            placeholder="Sua senha"
-            required
-          />
-          <button type="submit">Entrar</button>
-        </form>
-        <p class="extra-links">
-          <a id="show-reset-password">Esqueceu a senha?</a>
-        </p>
-        <p>Ainda não tem conta? <a id="show-register">Registe-se</a></p>
-      </div>
+        <div id="login-section" class="form-section active">
+          <h2>Bem-vindo de volta!</h2>
+          <p class="subtitle">Faça login para continuar.</p>
+          <form id="login-form">
+            <div class="form-group input-wrapper">
+              <i class="fas fa-envelope input-icon"></i>
+              <input
+                type="email"
+                id="login-email"
+                placeholder="Seu e-mail"
+                required
+              />
+            </div>
+            <div class="form-group input-wrapper password-wrapper">
+              <i class="fas fa-lock input-icon"></i>
+              <input
+                type="password"
+                id="login-password"
+                placeholder="Sua senha"
+                required
+              />
+              <i class="fas fa-eye-slash toggle-password"></i>
+            </div>
+            <button type="submit">
+              <span class="button-text">Entrar</span>
+              <span class="spinner" style="display: none"></span>
+            </button>
+          </form>
+          <p class="extra-links">
+            <a id="show-reset-password">Esqueceu a senha?</a>
+          </p>
+          <p>Ainda não tem conta? <a id="show-register">Registe-se</a></p>
+        </div>
 
-      <div id="register-section" style="display: none">
-        <h2>Crie a sua Conta</h2>
-        <form id="register-form">
-          <input
-            type="text"
-            id="register-name"
-            placeholder="Nome Completo"
-            required
-          />
-          <input
-            type="email"
-            id="register-email"
-            placeholder="Seu e-mail"
-            required
-          />
-          <input
-            type="password"
-            id="register-password"
-            placeholder="Crie uma senha"
-            required
-          />
-          <button type="submit">Registar</button>
-        </form>
-        <p>Já tem uma conta? <a id="show-login-from-register">Faça o login</a></p>
-      </div>
-      
-      <div id="reset-password-section" style="display: none">
-        <h2>Redefinir Senha</h2>
-        <form id="reset-password-form">
-          <p class="reset-info">Insira seu e-mail e enviaremos um link para você voltar a acessar a sua conta.</p>
-          <input
-            type="email"
-            id="reset-email"
-            placeholder="Seu e-mail de cadastro"
-            required
-          />
-          <button type="submit">Enviar Link de Redefinição</button>
-        </form>
-        <p>Lembrou da senha? <a id="show-login-from-reset">Voltar para o Login</a></p>
-      </div>
+        <div id="register-section" class="form-section">
+          <h2>Crie a sua Conta</h2>
+          <p class="subtitle">É rápido e fácil.</p>
+          <form id="register-form">
+             <div class="form-group input-wrapper">
+              <i class="fas fa-user input-icon"></i>
+              <input type="text" id="register-name" placeholder="Nome Completo" required />
+            </div>
+            <div class="form-group input-wrapper">
+              <i class="fas fa-envelope input-icon"></i>
+              <input type="email" id="register-email" placeholder="Seu e-mail" required/>
+            </div>
+            <div class="form-group input-wrapper password-wrapper">
+              <i class="fas fa-lock input-icon"></i>
+              <input type="password" id="register-password" placeholder="Crie uma senha" required/>
+              <i class="fas fa-eye-slash toggle-password"></i>
+            </div>
+            <div class="form-group input-wrapper password-wrapper">
+               <i class="fas fa-lock input-icon"></i>
+              <input type="password" id="register-confirm-password" placeholder="Confirme a senha" required/>
+               <i class="fas fa-eye-slash toggle-password"></i>
+            </div>
+            <button type="submit">
+              <span class="button-text">Registar</span>
+              <span class="spinner" style="display: none"></span>
+            </button>
+          </form>
+          <p>Já tem uma conta? <a id="show-login-from-register">Faça o login</a></p>
+        </div>
 
+        <div id="reset-password-section" class="form-section">
+          <h2>Redefinir Senha</h2>
+          <form id="reset-password-form">
+            <p class="reset-info">
+              Insira seu e-mail e enviaremos um link para você voltar a acessar
+              sua conta.
+            </p>
+            <div class="form-group input-wrapper">
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email" id="reset-email" placeholder="Seu e-mail de cadastro" required/>
+            </div>
+            <button type="submit">
+              <span class="button-text">Enviar Link</span>
+              <span class="spinner" style="display: none"></span>
+            </button>
+          </form>
+          <p>Lembrou da senha? <a id="show-login-from-reset">Voltar para o Login</a></p>
+        </div>
+      </div>
     </div>
+
     <div id="alert-modal" class="modal">
       <div class="modal-content">
         <span class="close-button">&times;</span>
@@ -88,6 +113,7 @@
         <button id="modal-ok-button">OK</button>
       </div>
     </div>
+
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>

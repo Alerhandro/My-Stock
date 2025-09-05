@@ -1,119 +1,253 @@
+/* Importa a fonte do Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+/* --- Estrutura e Estilos Gerais --- */
 body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: 'Poppins', sans-serif; /* Fonte mais moderna */
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    margin: 0;
 }
+
 #app-container {
-  width: 400px;
-  background-color: var(--fundo-secundario);
-  padding: 40px;
-  border-radius: 12px;
-  box-shadow: var(--sombra);
-  border: 2px solid #df57af;
-  background-color: #e86a741f;
+    width: 400px;
+    padding: 40px 50px;
+    border-radius: 15px;
+    background-color: #ffffff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    text-align: center;
 }
+
 .login-logo {
-  display: block;
-  width: 200px;
-  height: auto;
-  margin: 0 auto 30px;
-  margin-top: 0px;
+    width: 180px;
+    height: auto;
+    margin: 0 auto 20px;
 }
+
 h2 {
-  color: #4A4A4A;
-  text-align: center;
-  margin-top: 0;
-  margin-bottom: 30px;
+    color: #333;
+    margin-bottom: 10px;
+    font-weight: 600;
 }
+
+.subtitle {
+    color: #667;
+    margin-top: 0;
+    margin-bottom: 30px;
+    font-size: 14px;
+}
+
 p {
-  text-align: center;
-  color: #888888;
-  font-size: 14px;
+    color: #667;
+    font-size: 14px;
+    margin-top: 20px;
 }
+
 a {
-  color: #3678e4;
-  cursor: pointer;
-  text-decoration: none;
-  font-weight: 500;
+    color: var(--cor-primaria);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s;
 }
+
 a:hover {
-  text-decoration: underline;
+    color: var(--cor-primaria-hover);
+    text-decoration: underline;
 }
 
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
-  justify-content: center;
-  align-items: center;
-}
-.modal-content {
-  background-color: var(--fundo-secundario);
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: var(--sombra);
-  width: 90%;
-  max-width: 400px;
-  text-align: center;
-  position: relative;
-  animation: fadeIn 0.3s;
-}
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.close-button {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  color: var(--texto-secundario);
-  font-size: 28px;
-  font-weight: bold;
-  cursor: pointer;
-}
-.close-button:hover {
-  color: var(--texto-principal);
-}
-#modal-message {
-  font-size: 18px;
-  margin-bottom: 20px;
-  line-height: 1.5;
-}
-#modal-ok-button {
-  width: 120px;
-  margin: 0 auto;
+.extra-links {
+    font-size: 13px;
+    margin-top: 15px;
 }
 
-.modal-content #modal-message {
-  color: var(--texto-principal);
+/* --- Estilos de Formulário Corrigidos --- */
+.form-group {
+    margin-bottom: 20px;
 }
 
-button {
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.input-wrapper:focus-within {
+    border-color: var(--cor-primaria);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--cor-primaria) 20%, transparent);
+}
+
+.input-icon {
+    padding: 0 15px;
+    color: #aaa;
+    transition: color 0.3s;
+}
+
+.input-wrapper:focus-within .input-icon {
+    color: var(--cor-primaria);
+}
+
+/* Redefine os estilos do input para que ele se ajuste dentro do wrapper */
+.input-wrapper input {
+    flex-grow: 1; /* Faz o input ocupar o espaço restante */
+    width: 100%;
+    padding: 12px 10px 12px 0; /* Ajusta o padding para não sobrepor o ícone */
+    border: none;
+    background-color: transparent;
+    font-size: 16px;
+    outline: none;
+    margin: 0; /* Remove a margem do globals.css */
+    box-shadow: none; /* Remove a sombra do globals.css */
+    color: var(--texto-principal); /* Garante que o texto seja visível */
+}
+
+/* Ajusta a div do password para conter o ícone de olho */
+.password-wrapper {
+    justify-content: space-between;
+}
+
+.toggle-password {
+    cursor: pointer;
+    color: #aaa;
+    user-select: none;
+    padding: 0 15px;
+}
+
+/* --- Botão Principal --- */
+button[type="submit"] {
     width: 100%;
     padding: 12px;
-    background-color:#e86a74;
+    background-color: var(--cor-primaria);
     color: white;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
-    font-weight: 500;
-    transition: background-color 0.2s, transform 0.2s;
+    font-weight: 600;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    position: relative;
+    min-height: 48px;
 }
-button:hover {
-    background-color: #ca5d66;
-    transform: translateY(-1px);
+
+button[type="submit"]:hover:not(:disabled) {
+    background-color: var(--cor-primaria-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
+}
+
+button[type="submit"]:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
+}
+
+button:disabled {
+    background-color: #a5b4fc; /* Cor mais clara para desativado */
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.button-text {
+    transition: opacity 0.2s;
+}
+
+/* --- Animações e Modal --- */
+.form-section {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+}
+
+.form-section.active {
+    display: block;
+    opacity: 1;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: var(--fundo-secundario);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    position: relative;
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-button:hover {
+    color: #333;
+}
+
+#modal-message {
+    font-size: 16px;
+    margin-bottom: 25px;
+    line-height: 1.6;
+    color: var(--texto-principal);
+}
+
+#modal-ok-button {
+    width: 120px;
+    margin: 0 auto;
+}
+
+/* Spinner Styles */
+.spinner {
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
 }

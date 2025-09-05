@@ -1,6 +1,6 @@
 {
   "name": "despensa",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "Sistema de gerenciamento de despensa com Electron e Firebase.",
   "main": "src/main.js",
   "scripts": {
