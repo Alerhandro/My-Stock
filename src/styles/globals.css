@@ -1,9 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
-/* ==========================================================================
-   CSS Variables (Temas)
-   ========================================================================== */
-
 /* TEMA CLARO (PADRÃO) */
 :root {
     --fundo-principal: #f4f7fa;
@@ -18,6 +14,7 @@
     --cor-borda: #e2e8f0;
     --cor-sucesso: #10b981;
     --cor-erro: #ef4444;
+    --cor-erro-hover: #dc2626;
     --sombra: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
@@ -31,6 +28,7 @@ body.dark-theme {
     --texto-sidebar: #e2e8f0;
     --cor-primaria: #818cf8;
     --cor-primaria-hover: #6366f1;
+    --cor-erro-hover: #dc2626;
     --cor-borda: #334155;
 }
 
@@ -44,7 +42,22 @@ body.ocean-theme {
     --texto-sidebar: #e0f2fe;
     --cor-primaria: #0ea5e9;
     --cor-primaria-hover: #0284c7;
+    --cor-erro-hover: #dc2626;
     --cor-borda: #e0f2fe;
+}
+
+/* TEMA CELESTE (ESCURO) */
+body.pastel-dark-theme {
+    --fundo-principal: #2d3748;
+    --fundo-secundario: #4a5568;
+    --fundo-sidebar: #4a5568;
+    --texto-principal: #e2e8f0;
+    --texto-secundario: #a0aec0;
+    --texto-sidebar: #e2e8f0;
+    --cor-primaria: #81e6d9;
+    --cor-primaria-hover: #4fd1c5;
+    --cor-erro-hover: #dc2626;
+    --cor-borda: #5a6578;
 }
 
 /* TEMA CENOURA */
@@ -57,6 +70,7 @@ body.sunset-theme {
     --texto-sidebar: #e7e5e4;
     --cor-primaria: #f97316;
     --cor-primaria-hover: #ea580c;
+    --cor-erro-hover: #dc2626;
     --cor-borda: #44403c;
 }
 
@@ -70,51 +84,37 @@ body.carrot-light-theme {
     --texto-sidebar: #e0e7ff;        
     --cor-primaria: #f97316;         
     --cor-primaria-hover: #ea580c;   
+    --cor-erro-hover: #dc2626;
     --cor-borda: #fed7aa;            
-}
-
-/* TEMA CELESTE (ESCURO) */
-body.pastel-dark-theme {
-    --fundo-principal: #2d3748;
-    --fundo-secundario: #4a5568;
-    --fundo-sidebar: #4a5568;
-    --texto-principal: #e2e8f0;
-    --texto-secundario: #a0aec0;
-    --texto-sidebar: #e2e8f0;
-    --cor-primaria: #81e6d9;
-    --cor-primaria-hover: #4fd1c5;
-    --cor-borda: #5a6578;
 }
 
 /* TEMA LAVANDA */
 body.purple-lavender-theme {
-    --fundo-principal: #f5f3ff;       
+   --fundo-principal: #f5f3ff;       
     --fundo-secundario: #ffffff;     
     --fundo-sidebar: #4c1d95;      
-    --texto-principal: #1e1b4b;    
-    --texto-secundario: #64748b;    
-    --texto-sidebar: #e0e7ff;       
-    --cor-primaria: #8b5cf6;        
-    --cor-primaria-hover: #7c3aed;  
-    --cor-borda: #e0e7ff;            
+    --texto-principal: #2d3748;    
+    --texto-secundario: #718096;    
+    --texto-sidebar: #e9d8fd;       
+    --cor-primaria: #9f7aea;        
+    --cor-primaria-hover: #805ad5;  
+    --cor-borda: #e2e8f0;
+    --cor-erro-hover: #dc2626;          
 }
 
 /* TEMA AMETISTA */
 body.purple-amethyst-theme {
-    --fundo-principal: #1e1b4b;      
-    --fundo-secundario: #312e81;      
-    --fundo-sidebar: #282566;       
-    --texto-principal: #e0e7ff;      
-    --texto-secundario: #a5b4fc;     
-    --texto-sidebar: #e0e7ff;      
-    --cor-primaria: #a78bfa;    
-    --cor-primaria-hover: #c4b5fd; 
-    --cor-borda: #4338ca;         
+    --fundo-principal: #1a1b26;      
+    --fundo-secundario: #2a2d3d;      
+    --fundo-sidebar: #2a2d3d;       
+    --texto-principal: #e0e0e0;      
+    --texto-secundario: #a9a9d1;     
+    --texto-sidebar: #e0e0e0;      
+    --cor-primaria: #9d75e0;    
+    --cor-primaria-hover: #b392f0; 
+    --cor-borda: #44475a;
+    --cor-erro-hover: #dc2626;        
 }
-
-/* ==========================================================================
-   ESTILOS BASE E RESET
-   ========================================================================== */
 
 * {
     box-sizing: border-box;
@@ -128,10 +128,6 @@ body {
     -webkit-font-smoothing: antialiased;
     transition: background-color 0.3s, color 0.3s;
 }
-
-/* ==========================================================================
-   COMPONENTES GLOBAIS
-   ========================================================================== */
 
 /* --- Formulários --- */
 .form-group {

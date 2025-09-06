@@ -4,7 +4,7 @@ export let activeInventoryId = null;
 export let confirmCallback = null;
 export let activeListeners = [];
 export let lastReportData = [];
-export let shoppingList = []; // Nova variável
+export let shoppingList = [];
 
 export function setCurrentUser(user) {
   currentUser = user;
@@ -28,6 +28,6 @@ export function clearActiveListeners() {
 export function setLastReportData(data) {
     lastReportData = data;
 }
-export function setShoppingList(list) { // Nova função
+export function setShoppingList(list) {
     shoppingList = list;
 }

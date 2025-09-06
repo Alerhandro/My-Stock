@@ -1,7 +1,7 @@
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// --- UI Element Selections ---
+// --- Seleções de elementos da UI ---
 const loginSection = document.getElementById("login-section");
 const registerSection = document.getElementById("register-section");
 const resetPasswordSection = document.getElementById("reset-password-section");
@@ -21,7 +21,7 @@ const modalMessage = document.getElementById("modal-message");
 const modalOkButton = document.getElementById("modal-ok-button");
 const closeModalButton = alertModal.querySelector(".close-button");
 
-// --- UTILITY FUNCTIONS ---
+// --- FUNÇÕES UTILITÁRIAS ---
 
 function showModal(message) {
   modalMessage.textContent = message;
@@ -63,20 +63,20 @@ auth.onAuthStateChanged((user) => {
   }
 });
 
-// Form Switching
+// Troca de formulário
 showRegisterLink.addEventListener("click", () => showSection(registerSection));
 showLoginFromRegisterLink.addEventListener("click", () => showSection(loginSection));
 showResetPasswordLink.addEventListener("click", () => showSection(resetPasswordSection));
 showLoginFromResetLink.addEventListener("click", () => showSection(loginSection));
 
-// Modal Controls
+// Controles de Modais
 modalOkButton.addEventListener("click", closeModal);
 closeModalButton.addEventListener("click", closeModal);
 window.addEventListener("click", (e) => {
   if (e.target == alertModal) closeModal();
 });
 
-// Password Visibility Toggles
+// Visibilidade da senha
 document.querySelectorAll('.toggle-password').forEach(toggle => {
     toggle.addEventListener('click', function (e) {
         const passwordInput = this.previousElementSibling;
@@ -87,9 +87,9 @@ document.querySelectorAll('.toggle-password').forEach(toggle => {
     });
 });
 
-// --- FORM SUBMISSION LOGIC ---
+// --- LÓGICA DE ENVIO DE FORMULÁRIOS ---
 
-// Registration
+// Registro
 registerForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const button = e.target.querySelector('button[type="submit"]');
@@ -169,7 +169,7 @@ loginForm.addEventListener("submit", (e) => {
     });
 });
 
-// Password Reset
+// Resetar senha
 resetPasswordForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const button = e.target.querySelector('button[type="submit"]');
@@ -193,5 +193,5 @@ resetPasswordForm.addEventListener("submit", async (e) => {
   }
 });
 
-// Initialize with the login form visible
+
 showSection(loginSection);

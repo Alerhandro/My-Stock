@@ -1,5 +1,3 @@
-/* src/styles/home.css */
-
 body {
     display: flex;
     height: 100vh;
@@ -131,6 +129,24 @@ h3 {
 }
 
 /* Listas (Inventário e Usuários) */
+.shopping-list-item-name-container {
+    display: flex;
+    flex-direction: column; /* Coloca os itens em coluna */
+    align-items: flex-start; /* Alinha à esquerda */
+    gap: 2px; /* Pequeno espaço entre o nome e a despensa */
+}
+
+.shopping-list-item-name {
+    font-weight: 500;
+    font-size: 1.1em;
+}
+
+.shopping-list-inventory-name {
+    font-size: 0.85em; /* Ligeiramente menor */
+    color: var(--texto-secundario);
+    font-style: italic; /* Mantém o itálico que já tinha */
+}
+
 #inventory-list,
 #user-list {
     display: grid;
@@ -192,6 +208,12 @@ h3 {
 .delete-inventory-button,
 .remove-user-button {
     background: var(--cor-erro);
+}
+
+.delete-button:hover:not(:disabled),
+.delete-inventory-button:hover:not(:disabled),
+.remove-user-button:hover:not(:disabled) {
+    background-color: var(--cor-erro-hover);
 }
 
 .consume-button {
@@ -258,7 +280,7 @@ h3 {
 
 .theme-options-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
     margin-top: 20px;
 }
@@ -433,9 +455,7 @@ h3 {
     margin-bottom: 0;
 }
 
-/* ==========================================================================
-   ESTILOS DOS BOTÕES DE PDF E IMPRESSÃO (AGORA SEPARADOS)
-   ========================================================================== */
+/* ESTILOS DOS BOTÕES DE PDF E IMPRESSÃO */
 #generate-pdf-btn {
     width: 100%;
     background-color: var(--cor-destaque);
@@ -451,7 +471,7 @@ h3 {
     font-size: 14px;
     background: #f59e0b;
     border: 1px solid var(--cor-borda);
-    color: var(--texto-principal);
+    color: white;
 }
 
 #print-shopping-list-btn:hover {
@@ -596,5 +616,3 @@ h3 {
   color: var(--texto-secundario);
   text-align: left;
 }
-
-/* SPINNER GLOBAL - REMOVIDO POIS JÁ ESTÁ NO GLOBALS.CSS */

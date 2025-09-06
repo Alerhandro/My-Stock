@@ -71,20 +71,18 @@ function renderShoppingList(container, lowStockProducts) {
     if (lowStockProducts.length > 0) {
         let itemsHtml = lowStockProducts.map(p => `
             <div class="shopping-list-item">
-                <div class="shopping-list-item-details">
-                    <span class="shopping-list-item-icon">🛒</span>
-                    <div>
-                        <div class="shopping-list-item-name">${p.name}</div>
-                        <div class="shopping-list-item-info">
-                            <i>${p.inventoryName}</i>
-                        </div>
-                    </div>
-                </div>
-                <div class="shopping-list-item-info">
-                    <span>Estoque: ${p.quantity}</span><br>
-                    <span>Mínimo: ${p.minQuantity}</span>
-                </div>
+        <div class="shopping-list-item-details">
+            <span class="shopping-list-item-icon">🛒</span>
+            <div class="shopping-list-item-name-container">
+                <span class="shopping-list-item-name">${p.name}</span>
+                <span class="shopping-list-inventory-name">em ${p.inventoryName}</span>
             </div>
+        </div>
+        <div class="shopping-list-item-info">
+            <span>Estoque: ${p.quantity}</span><br>
+            <span>Mínimo: ${p.minQuantity}</span>
+        </div>
+    </div>
         `).join('');
         container.innerHTML = `<div id="shopping-list-container">${itemsHtml}</div>`;
     } else {

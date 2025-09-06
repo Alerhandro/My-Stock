@@ -55,11 +55,11 @@ export function openThemeModal() {
   const themeOptions = [
     { value: "light", name: "Claro", color: "#f4f7fa" },
     { value: "dark-theme", name: "Escuro", color: "#0f172a" },
-    { value: "ocean-theme", name: "Oceano", color: "#0c4a6e" },
+    { value: "ocean-theme", name: "Oceano", color: "#0284c7;" },
     { value: "pastel-dark-theme", name: "Celeste", color: "#81e6d9" },
     { value: "carrot-light-theme", name: "Cenoura Suave", color: "#f97316" },
     { value: "sunset-theme", name: "Cenoura", color: "#f97316" },
-    { value: "purple-lavender-theme", name: "Lavanda", color: "#8b5cf6" }, 
+    { value: "purple-lavender-theme", name: "Lavanda", color: "#9f7aea" }, 
     { value: "purple-amethyst-theme", name: "Ametista", color: "#a78bfa" }, 
     
   ];
